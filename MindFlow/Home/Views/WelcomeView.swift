@@ -47,6 +47,7 @@ class WelcomeView: UIView {
         subtitleLabel.font = UIFont.systemFont(ofSize: 16)
         subtitleLabel.textColor = theme.subText
         subtitleLabel.textAlignment = .center
+        subtitleLabel.numberOfLines = 0
         
         addSubview(welcomeImageView)
         addSubview(titleLabel)

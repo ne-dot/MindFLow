@@ -10,6 +10,9 @@
 		8D0143662D953DCA007846F8 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143652D953DCA007846F8 /* SnapKit */; };
 		8D01436B2D954236007846F8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 8D01436A2D954236007846F8 /* Kingfisher */; };
 		8D0143842D95547B007846F8 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143832D95547B007846F8 /* Lottie */; };
+		8D0143922D958119007846F8 /* SwiftfulLoadingIndicators in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143912D958119007846F8 /* SwiftfulLoadingIndicators */; };
+		8D0143952D9581B3007846F8 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143942D9581B3007846F8 /* NVActivityIndicatorView */; };
+		8D0143972D9581B3007846F8 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143962D9581B3007846F8 /* NVActivityIndicatorViewExtended */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,8 +46,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D01436B2D954236007846F8 /* Kingfisher in Frameworks */,
+				8D0143952D9581B3007846F8 /* NVActivityIndicatorView in Frameworks */,
 				8D0143662D953DCA007846F8 /* SnapKit in Frameworks */,
+				8D0143972D9581B3007846F8 /* NVActivityIndicatorViewExtended in Frameworks */,
 				8D0143842D95547B007846F8 /* Lottie in Frameworks */,
+				8D0143922D958119007846F8 /* SwiftfulLoadingIndicators in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +96,9 @@
 				8D0143652D953DCA007846F8 /* SnapKit */,
 				8D01436A2D954236007846F8 /* Kingfisher */,
 				8D0143832D95547B007846F8 /* Lottie */,
+				8D0143912D958119007846F8 /* SwiftfulLoadingIndicators */,
+				8D0143942D9581B3007846F8 /* NVActivityIndicatorView */,
+				8D0143962D9581B3007846F8 /* NVActivityIndicatorViewExtended */,
 			);
 			productName = MindFlow;
 			productReference = 8D0143462D95320A007846F8 /* MindFlow.app */;
@@ -123,6 +132,8 @@
 				8D0143642D953DCA007846F8 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				8D0143692D954236007846F8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				8D0143822D95547B007846F8 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				8D0143902D958119007846F8 /* XCRemoteSwiftPackageReference "SwiftfulLoadingIndicators" */,
+				8D0143932D9581B3007846F8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D0143472D95320A007846F8 /* Products */;
@@ -378,6 +389,22 @@
 				minimumVersion = 4.5.1;
 			};
 		};
+		8D0143902D958119007846F8 /* XCRemoteSwiftPackageReference "SwiftfulLoadingIndicators" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.4;
+			};
+		};
+		8D0143932D9581B3007846F8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -395,6 +422,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8D0143822D95547B007846F8 /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
+		};
+		8D0143912D958119007846F8 /* SwiftfulLoadingIndicators */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0143902D958119007846F8 /* XCRemoteSwiftPackageReference "SwiftfulLoadingIndicators" */;
+			productName = SwiftfulLoadingIndicators;
+		};
+		8D0143942D9581B3007846F8 /* NVActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0143932D9581B3007846F8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
+			productName = NVActivityIndicatorView;
+		};
+		8D0143962D9581B3007846F8 /* NVActivityIndicatorViewExtended */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0143932D9581B3007846F8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
+			productName = NVActivityIndicatorViewExtended;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

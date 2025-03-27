@@ -29,13 +29,6 @@ class SearchViewController: UIViewController {
     private let recentTitle = UILabel()
     private let recentStackView = UIStackView()
     
-    private let thinkingView = UIView()
-    private var thinkingAnimation: LottieAnimationView?
-    private let thinkingTextContainer = UIView()
-    private let thinkingText = UILabel()
-    private var dotsAnimation: LottieAnimationView?
-    private let thinkingSubtext = UILabel()
-    
     private let searchResultView = SearchResultView()
     
     // MARK: - Lifecycle
@@ -53,11 +46,15 @@ class SearchViewController: UIViewController {
     }
     
     // MARK: - UI Setup
+    // 修改属性声明部分
+    private let thinkingView = ThinkingView()
+    
+    // 删除原来的setupThinkingView方法，并在setupUI方法中调用
     private func setupUI() {
         addAllSubviews()
         setupAllConstraints()
         setupSearchHeader()
-        setupThinkingView()
+        // 删除setupThinkingView()调用
         setupSearchResultView()
         
         // 初始状态
@@ -244,69 +241,6 @@ class SearchViewController: UIViewController {
         return itemView
     }
     
-    private func setupThinkingView() {
-        // 添加思考动画
-        thinkingAnimation = LottieAnimationView(name: "thinking-animation")
-        if let animation = thinkingAnimation {
-            thinkingView.addSubview(animation)
-            animation.loopMode = .loop
-            animation.contentMode = .scaleAspectFit
-            
-            animation.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.top.equalToSuperview().offset(60)
-                make.width.height.equalTo(200)
-            }
-        }
-        
-        // 添加"Thinking"文本容器
-        thinkingView.addSubview(thinkingTextContainer)
-        thinkingTextContainer.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(thinkingAnimation!.snp.bottom).offset(20)
-        }
-        
-        // 添加"Thinking"文本
-        thinkingText.text = "Thinking"
-        thinkingText.textColor = theme.text
-        thinkingText.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        thinkingTextContainer.addSubview(thinkingText)
-        thinkingText.snp.makeConstraints { make in
-            make.left.top.bottom.equalToSuperview()
-        }
-        
-        // 添加点动画
-        dotsAnimation = LottieAnimationView(name: "thinking")
-        if let dotsAnim = dotsAnimation {
-            thinkingTextContainer.addSubview(dotsAnim)
-            dotsAnim.loopMode = .loop
-            dotsAnim.contentMode = .scaleAspectFit
-            
-            dotsAnim.snp.makeConstraints { make in
-                make.left.equalTo(thinkingText.snp.right).offset(4)
-                make.centerY.equalTo(thinkingText)
-                make.width.equalTo(40)
-                make.height.equalTo(20)
-                make.right.equalToSuperview()
-            }
-        }
-        
-        // 添加副文本
-        thinkingSubtext.text = "Analyzing your query and gathering insights from multiple sources"
-        thinkingSubtext.textColor = theme.subText
-        thinkingSubtext.font = UIFont.systemFont(ofSize: 14)
-        thinkingSubtext.textAlignment = .center
-        thinkingSubtext.numberOfLines = 0
-        thinkingView.addSubview(thinkingSubtext)
-        
-        thinkingSubtext.snp.makeConstraints { make in
-            make.top.equalTo(thinkingTextContainer.snp.bottom).offset(16)
-            make.centerX.equalToSuperview()
-            make.left.equalToSuperview().offset(32)
-            make.right.equalToSuperview().offset(-32)
-        }
-    }
-    
     private func setupSearchResultView() {
         // 配置搜索结果视图
         searchResultView.isHidden = true
@@ -342,6 +276,7 @@ class SearchViewController: UIViewController {
         }
     }
     
+    // 修改handleSearch方法中的动画部分
     private func handleSearch() {
         guard let searchText = searchTextField.text, !searchText.isEmpty else { return }
         
@@ -351,16 +286,16 @@ class SearchViewController: UIViewController {
         updateUI()
         
         // 开始动画
-        thinkingAnimation?.play()
-        dotsAnimation?.play()
+        thinkingView.startAnimating()
         
         // 模拟搜索过程，3秒后显示结果
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
-            guard let self = self else { return }
-            self.isThinking = false
-            self.showResults = true
-            self.updateUI()
-        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+//            guard let self = self else { return }
+//            self.isThinking = false
+//            self.showResults = true
+//            self.updateUI()
+//            self.thinkingView.stopAnimating()
+//        }
     }
     
     private func updateUI() {
