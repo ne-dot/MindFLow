@@ -13,10 +13,39 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        // 创建窗口并设置窗口场景
+        window = UIWindow(windowScene: windowScene)
+        
+        // 创建TabBarController
+        let tabBarController = UITabBarController()
+        
+        // 创建三个视图控制器
+        let homeVC = HomeViewController()
+        let favoritesVC = FavoritesViewController()
+        let profileVC = ProfileViewController()
+        
+        // 设置标题和图标
+        homeVC.title = "首页"
+        favoritesVC.title = "收藏"
+        profileVC.title = "我的"
+        
+        // 设置标签栏图标（使用系统图标）
+        homeVC.tabBarItem = UITabBarItem(title: "首页", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        favoritesVC.tabBarItem = UITabBarItem(title: "收藏", image: UIImage(systemName: "star"), selectedImage: UIImage(systemName: "star.fill"))
+        profileVC.tabBarItem = UITabBarItem(title: "我的", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
+        
+        // 将视图控制器添加到TabBarController
+        tabBarController.viewControllers = [
+            UINavigationController(rootViewController: homeVC),
+            UINavigationController(rootViewController: favoritesVC),
+            UINavigationController(rootViewController: profileVC)
+        ]
+        
+        // 设置TabBarController为根视图控制器
+        window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

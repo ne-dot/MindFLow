@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8D0143662D953DCA007846F8 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143652D953DCA007846F8 /* SnapKit */; };
+		8D01436B2D954236007846F8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 8D01436A2D954236007846F8 /* Kingfisher */; };
+		8D0143842D95547B007846F8 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143832D95547B007846F8 /* Lottie */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8D0143462D95320A007846F8 /* MindFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MindFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +42,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D01436B2D954236007846F8 /* Kingfisher in Frameworks */,
+				8D0143662D953DCA007846F8 /* SnapKit in Frameworks */,
+				8D0143842D95547B007846F8 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +87,9 @@
 			);
 			name = MindFlow;
 			packageProductDependencies = (
+				8D0143652D953DCA007846F8 /* SnapKit */,
+				8D01436A2D954236007846F8 /* Kingfisher */,
+				8D0143832D95547B007846F8 /* Lottie */,
 			);
 			productName = MindFlow;
 			productReference = 8D0143462D95320A007846F8 /* MindFlow.app */;
@@ -107,6 +119,11 @@
 			);
 			mainGroup = 8D01433D2D95320A007846F8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8D0143642D953DCA007846F8 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				8D0143692D954236007846F8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				8D0143822D95547B007846F8 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D0143472D95320A007846F8 /* Products */;
 			projectDirPath = "";
@@ -152,6 +169,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -179,6 +197,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -333,6 +352,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8D0143642D953DCA007846F8 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		8D0143692D954236007846F8 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.3.1;
+			};
+		};
+		8D0143822D95547B007846F8 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8D0143652D953DCA007846F8 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0143642D953DCA007846F8 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		8D01436A2D954236007846F8 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0143692D954236007846F8 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		8D0143832D95547B007846F8 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0143822D95547B007846F8 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D01433E2D95320A007846F8 /* Project object */;
 }

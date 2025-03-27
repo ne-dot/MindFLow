@@ -1,0 +1,75 @@
+# Xcode
+.DS_Store
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+
+# Build products
+DerivedData/
+build/
+*.o
+*.d
+*.a
+*.lo
+*.la
+*.Plo
+*.so
+*.swp
+*.gcno
+*.gcda
+*.gcov
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# CocoaPods
+Pods/
+*.lock
+podfile.lock
+Podfile.lock
+*.xcworkspace
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+fastlane/*.log
+
+# Xcode Archives
+*.xcarchive
+
+# Xcode Derived Data
+DerivedData/
+
+# Xcode Playground
+timeline.xctimeline
+playground.xcworkspace
+
+# SwiftPM
+.build/
+.swiftpm/xcode/package.xcworkspace/
+sourcePackages/
+
+# macOS Files
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Firebase & GoogleService
+GoogleService-Info.plist
+
+# Custom User Data
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserdatad
+*.xcscmblueprint
+*.xcworkspacedata
+.vscode
