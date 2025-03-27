@@ -37,13 +37,13 @@ class WelcomeView: UIView {
         welcomeImageView.layer.cornerRadius = 16
         
         // 标题样式
-        titleLabel.text = "Welcome to MindFlow!"
+        titleLabel.text = "welcome_title".localized
         titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .medium)
         titleLabel.textColor = theme.text
         titleLabel.textAlignment = .center
         
         // 副标题样式
-        subtitleLabel.text = "Start searching to discover AI-powered insights"
+        subtitleLabel.text = "welcome_subtitle".localized
         subtitleLabel.font = UIFont.systemFont(ofSize: 16)
         subtitleLabel.textColor = theme.subText
         subtitleLabel.textAlignment = .center

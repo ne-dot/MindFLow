@@ -16,7 +16,7 @@ class HomeViewController: UIViewController {
     private let contentView = UIView()
     private let welcomeView = WelcomeView()
     private let suggestionsStackView = UIStackView()
-    private let tipView = TipView(iconName: "lightbulb", text: "Try voice search for hands-free exploration")
+    private let tipView = TipView(iconName: "lightbulb", text: "search_hint".localized)
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -101,9 +101,9 @@ class HomeViewController: UIViewController {
     
     private func setupSuggestions() {
         let suggestions = [
-            "How does AI search work?",
-            "Best productivity tools in 2025",
-            "Future of remote work"
+            "suggestion_ai_search".localized,
+            "suggestion_productivity".localized,
+            "suggestion_remote_work".localized
         ]
         
         for suggestion in suggestions {
@@ -135,14 +135,14 @@ class HomeViewController: UIViewController {
     // 修改显示搜索页面的方法，添加渐入渐出动画
     private func showSearchScreen() {
         let searchVC = SearchViewController()
-        searchVC.modalPresentationStyle = .overFullScreen // 改为overFullScreen以支持自定义动画
-        searchVC.modalTransitionStyle = .crossDissolve // 使用系统的交叉溶解效果
-        searchVC.view.alpha = 0 // 初始透明度为0
+        searchVC.modalPresentationStyle = .overFullScreen
+        searchVC.modalTransitionStyle = .crossDissolve
+        searchVC.view.alpha = 0
         
         searchVC.configure(with: [
-            "How does AI search work?",
-            "Best productivity tools in 2025",
-            "Future of remote work"
+            "suggestion_ai_search".localized,
+            "suggestion_productivity".localized,
+            "suggestion_remote_work".localized
         ])
         
         searchVC.onClose = { [weak self] in
@@ -164,17 +164,17 @@ class HomeViewController: UIViewController {
     
     // MARK: - Actions
     private func handleSearchTextChanged(_ text: String) {
-        print("搜索文本变化: \(text)")
+        print("\("search_text_changed".localized)\(text)")
         // 处理搜索文本变化
     }
     
     private func handleMicButtonTapped() {
-        print("麦克风按钮点击")
+        print("mic_button_tapped".localized)
         // 处理麦克风按钮点击
     }
     
     private func handleSuggestionTap(_ suggestion: String) {
-        print("建议卡片点击: \(suggestion)")
+        print("\("suggestion_tapped".localized)\(suggestion)")
         // 处理建议卡片点击
         headerView.setSearchText(suggestion)
     }

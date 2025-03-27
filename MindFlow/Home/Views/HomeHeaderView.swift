@@ -60,7 +60,7 @@ class HomeHeaderView: UIView {
         searchIcon.tintColor = theme.iconColor
         
         // 搜索标签样式
-        searchLabel.text = "Search anything..."
+        searchLabel.text = "search_placeholder".localized
         searchLabel.textColor = theme.searchPlaceholder
         searchLabel.font = UIFont.systemFont(ofSize: 14)
         
@@ -129,7 +129,7 @@ class HomeHeaderView: UIView {
     func setSearchText(_ text: String) {
         searchLabel.text = text
         // 如果设置了实际搜索文本，更改颜色为正常文本颜色
-        if text != "Search anything..." {
+        if text != "search_placeholder".localized {
             searchLabel.textColor = theme.text
         } else {
             searchLabel.textColor = theme.searchPlaceholder

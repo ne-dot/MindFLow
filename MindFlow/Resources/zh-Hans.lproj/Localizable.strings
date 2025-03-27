@@ -1,0 +1,35 @@
+// 通用
+"success" = "成功";
+"error" = "错误";
+"cancel" = "取消";
+"confirm" = "确认";
+"save" = "保存";
+"delete" = "删除";
+"loading" = "加载中...";
+
+// 标签栏
+"tab_home" = "首页";
+"tab_favorites" = "收藏";
+"tab_profile" = "我的";
+
+// 用户相关
+"anonymous_login_success" = "匿名登录成功";
+"anonymous_login_failure" = "匿名登录失败";
+"login_success" = "登录成功";
+"login_failure" = "登录失败";
+
+// HomeViewController
+"search_hint" = "尝试语音搜索，解放双手探索";
+"suggestion_ai_search" = "AI搜索是如何工作的？";
+"suggestion_productivity" = "2025年最佳生产力工具";
+"suggestion_remote_work" = "远程工作的未来";
+"search_text_changed" = "搜索文本变化: ";
+"mic_button_tapped" = "麦克风按钮点击";
+"suggestion_tapped" = "建议卡片点击: ";
+
+// HomeHeaderView
+"search_placeholder" = "搜索任何内容...";
+
+// WelcomeView
+"welcome_title" = "欢迎使用MindFlow!";
+"welcome_subtitle" = "开始搜索，探索AI驱动的见解";

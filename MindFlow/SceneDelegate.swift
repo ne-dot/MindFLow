@@ -27,14 +27,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let profileVC = ProfileViewController()
         
         // 设置标题和图标
-        homeVC.title = "首页"
-        favoritesVC.title = "收藏"
-        profileVC.title = "我的"
+        // 在scene方法中修改标签栏标题
+        homeVC.title = "tab_home".localized
+        favoritesVC.title = "tab_favorites".localized
+        profileVC.title = "tab_profile".localized
         
         // 设置标签栏图标（使用系统图标）
-        homeVC.tabBarItem = UITabBarItem(title: "首页", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
-        favoritesVC.tabBarItem = UITabBarItem(title: "收藏", image: UIImage(systemName: "star"), selectedImage: UIImage(systemName: "star.fill"))
-        profileVC.tabBarItem = UITabBarItem(title: "我的", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
+        homeVC.tabBarItem = UITabBarItem(title: "tab_home".localized, image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        favoritesVC.tabBarItem = UITabBarItem(title: "tab_favorites".localized, image: UIImage(systemName: "star"), selectedImage: UIImage(systemName: "star.fill"))
+        profileVC.tabBarItem = UITabBarItem(title: "tab_profile".localized, image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
         
         // 将视图控制器添加到TabBarController
         tabBarController.viewControllers = [
@@ -63,10 +64,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UserService.shared.anonymousLogin { result in
                 switch result {
                 case .success(let data):
-                    print("匿名登录成功，用户ID: \(data.user.userId)")
+                    print("anonymous_login_success".localized + ", " + "user_id".localized + ": \(data.user.userId)")
                     // 匿名ID已在UserService中保存
                 case .failure(let error):
-                    print("匿名登录失败: \(error.localizedDescription)")
+                    print("anonymous_login_failure".localized + ": \(error.localizedDescription)")
                 }
             }
         }

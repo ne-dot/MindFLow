@@ -17,7 +17,8 @@ class UserService {
                     NetworkManager.shared.setAnonymousId(response.data.anonymousId)
                     completion(.success(response.data))
                 } else {
-                    let error = NSError(domain: "UserService", code: 0, userInfo: [NSLocalizedDescriptionKey: response.message])
+                    let errorMessage = response.message
+                    let error = NSError(domain: "UserService", code: 0, userInfo: [NSLocalizedDescriptionKey: errorMessage])
                     completion(.failure(error))
                 }
             case .failure(let error):
