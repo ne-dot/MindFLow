@@ -26,7 +26,7 @@ class ThinkingView: UIView {
     
     private lazy var outerLayer: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0.39, green: 0.4, blue: 0.95, alpha: 0.5)
+        view.backgroundColor = UIColor(red: 0.39, green: 0.4, blue: 0.95, alpha: 0.3)
         view.layer.cornerRadius = 100 // 200/2
         view.layer.masksToBounds = true
         return view
@@ -34,7 +34,7 @@ class ThinkingView: UIView {
     
     private lazy var middleLayer: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0.39, green: 0.4, blue: 0.95, alpha: 0.7)
+        view.backgroundColor = UIColor(red: 0.39, green: 0.4, blue: 0.95, alpha: 0.5)
         view.layer.cornerRadius = 75 // 150/2
         view.layer.masksToBounds = true
         return view
@@ -42,7 +42,7 @@ class ThinkingView: UIView {
     
     private lazy var innerLayer: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0.39, green: 0.4, blue: 0.95, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 0.39, green: 0.4, blue: 0.95, alpha: 0.7)
         view.layer.cornerRadius = 50 // 100/2
         view.layer.masksToBounds = true
         return view

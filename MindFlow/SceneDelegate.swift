@@ -46,6 +46,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // 设置TabBarController为根视图控制器
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
+        
+        // 执行匿名登录
+        performAnonymousLogin()
+    }
+    
+    // 执行匿名登录
+    private func performAnonymousLogin() {
+        // 检查是否已有匿名ID
+        if let existingAnonymousId = DefaultsManager.shared.getAnonymousId() {
+            // 已有匿名ID，直接设置到NetworkManager
+            NetworkManager.shared.setAnonymousId(existingAnonymousId)
+            print("已使用现有匿名ID: \(existingAnonymousId)")
+        } else {
+            // 没有匿名ID，调用登录接口
+            UserService.shared.anonymousLogin { result in
+                switch result {
+                case .success(let data):
+                    print("匿名登录成功，用户ID: \(data.user.userId)")
+                    // 匿名ID已在UserService中保存
+                case .failure(let error):
+                    print("匿名登录失败: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
