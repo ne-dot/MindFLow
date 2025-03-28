@@ -9,24 +9,8 @@ import UIKit
 import SnapKit
 
 // 搜索结果数据模型
-// 在SearchResultTableView.swift中添加对AI回复卡片的支持
 
-// 修改SearchResultItem结构体，添加类型字段
-struct SearchResultItem {
-    enum ResultType {
-        case aiResponse
-        case normalResult
-    }
-    
-    let id: String
-    let title: String
-    let description: String
-    let source: String
-    let imageUrl: String?
-    var isFavorited: Bool
-    var isBookmarked: Bool
-    let type: ResultType // 新增类型字段
-}
+
 
 // 在SearchResultTableView类中添加对AI回复卡片的支持
 class SearchResultTableView: UIView {
@@ -112,18 +96,26 @@ extension SearchResultTableView: UITableViewDelegate, UITableViewDataSource {
             // 设置回调
             cell.onCopy = {
                 print("复制AI回复")
+                UIPasteboard.general.string = result.description
             }
             
             cell.onShare = {
                 print("分享AI回复")
+                // 这里可以添加分享功能
+                if let topVC = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController() {
+                    let activityVC = UIActivityViewController(activityItems: [result.description], applicationActivities: nil)
+                    topVC.present(activityVC, animated: true)
+                }
             }
             
             cell.onLike = { isLiked in
                 print("点赞AI回复: \(isLiked)")
+                // 可以添加点赞后的处理逻辑
             }
             
             cell.onDislike = { isDisliked in
                 print("踩AI回复: \(isDisliked)")
+                // 可以添加踩后的处理逻辑
             }
             
             return cell
@@ -160,6 +152,24 @@ extension SearchResultTableView: UITableViewDelegate, UITableViewDataSource {
             }
             
             return cell
+        }
+    }
+    
+    // 添加点击事件处理
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let result = searchResults[indexPath.row]
+        
+        // 只处理普通结果的点击事件，AI回复不需要跳转
+        if case .normalResult = result.type, !result.contextLink.isEmpty {
+            // 跳转到WebView
+            if let url = URL(string: result.contextLink) {
+                let webViewController = WebViewController(url: url)
+                if let topVC = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController() {
+                    topVC.navigationController?.pushViewController(webViewController, animated: true)
+                }
+            }
         }
     }
     

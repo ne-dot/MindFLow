@@ -135,9 +135,7 @@ class HomeViewController: UIViewController {
     // 修改显示搜索页面的方法，添加渐入渐出动画
     private func showSearchScreen() {
         let searchVC = SearchViewController()
-        searchVC.modalPresentationStyle = .overFullScreen
-        searchVC.modalTransitionStyle = .crossDissolve
-        searchVC.view.alpha = 0
+       
         
         searchVC.configure(with: [
             "suggestion_ai_search".localized,
@@ -145,19 +143,24 @@ class HomeViewController: UIViewController {
             "suggestion_remote_work".localized
         ])
         
+        let searchNav = UINavigationController(rootViewController: searchVC)
+        searchNav.modalPresentationStyle = .overFullScreen
+        searchNav.modalTransitionStyle = .crossDissolve
+        searchNav.view.alpha = 0
+        
         searchVC.onClose = { [weak self] in
             // 关闭时的渐出动画
             UIView.animate(withDuration: 0.25, animations: {
-                searchVC.view.alpha = 0
+                searchNav.view.alpha = 0
             }, completion: { _ in
                 self?.dismiss(animated: false)
             })
         }
         
-        present(searchVC, animated: false) {
+        present(searchNav, animated: false) {
             // 呈现后的渐入动画
             UIView.animate(withDuration: 0.3) {
-                searchVC.view.alpha = 1
+                searchNav.view.alpha = 1
             }
         }
     }

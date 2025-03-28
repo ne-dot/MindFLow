@@ -41,6 +41,11 @@ class SearchViewController: UIViewController {
         setupActions()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     // MARK: - Public Methods
     func configure(with suggestions: [String]) {
         self.suggestions = suggestions
@@ -307,16 +312,11 @@ class SearchViewController: UIViewController {
                         // 处理成功的搜索结果
                         print("搜索成功: \(response.message)")
                         
-                        // 这里需要将SearchResponse转换为SearchResultItem
-                        let aiResult = self.convertToAIResultItem(from: response.data)
-                        let googleResults = self.convertToResultItems(from: response.data.googleResults)
-                        
-                        // 合并AI结果和Google结果
-                        var allResults = [aiResult]
-                        allResults.append(contentsOf: googleResults)
+                        // 使用SearchService处理数据
+                        let searchResults = self.searchService.processSearchResults(data: response.data)
                         
                         // 更新搜索结果视图
-                        self.searchResultView.updateResults(allResults)
+                        self.searchResultView.updateResults(searchResults)
                     } else {
                         // 处理API返回的错误
                         self.showErrorAlert(message: response.message)
@@ -327,36 +327,6 @@ class SearchViewController: UIViewController {
                     self.showErrorAlert(message: error.localizedDescription)
                 }
             }
-        }
-    }
-    
-    // 将API返回的AI摘要转换为SearchResultItem
-    private func convertToAIResultItem(from data: SearchData) -> SearchResultItem {
-        return SearchResultItem(
-            id: "ai-response",
-            title: "MindFlow AI",
-            description: data.gptSummary,
-            source: "",
-            imageUrl: nil,
-            isFavorited: false,
-            isBookmarked: false,
-            type: .aiResponse
-        )
-    }
-    
-    // 将API返回的Google结果转换为SearchResultItem数组
-    private func convertToResultItems(from googleResults: [GoogleResult]) -> [SearchResultItem] {
-        return googleResults.enumerated().map { index, result in
-            return SearchResultItem(
-                id: "google-\(index)",
-                title: result.title,
-                description: result.snippet,
-                source: result.source,
-                imageUrl: nil, // Google结果中没有图片URL
-                isFavorited: false,
-                isBookmarked: false,
-                type: .normalResult
-            )
         }
     }
     
