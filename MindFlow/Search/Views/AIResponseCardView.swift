@@ -12,15 +12,79 @@ import Down // 添加Down库的导入
 class AIResponseCardView: UITableViewCell {
     
     // MARK: - UI Components
-    private let containerView = UIView()
-    private let avatarImageView = UIImageView()
-    private let titleLabel = UILabel()
-    private let responseTextView = UITextView()
-    private let actionButtonsView = UIView()
-    private let copyButton = UIButton(type: .system)
-    private let shareButton = UIButton(type: .system)
-    private let likeButton = UIButton(type: .system)
-    private let dislikeButton = UIButton(type: .system)
+    private lazy var containerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = theme.background
+        view.layer.cornerRadius = 12
+        view.clipsToBounds = true
+        return view
+    }()
+    
+    private lazy var avatarImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "ai_avatar") ?? UIImage(systemName: "brain")
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0)
+        imageView.backgroundColor = theme.textBackground
+        imageView.layer.cornerRadius = 20
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "MindFlow AI"
+        label.textColor = theme.text
+        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        return label
+    }()
+    
+    private lazy var responseTextView: UITextView = {
+        let textView = UITextView()
+        textView.backgroundColor = .clear
+        textView.textColor = theme.subText
+        textView.font = UIFont.systemFont(ofSize: 15)
+        textView.isEditable = false
+        textView.isScrollEnabled = false
+        textView.textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        textView.textContainer.lineFragmentPadding = 0
+        return textView
+    }()
+    
+    private lazy var actionButtonsView: UIView = {
+        let view = UIView()
+        view.backgroundColor = theme.cardBackground
+        view.layer.cornerRadius = 8
+        return view
+    }()
+    
+    private lazy var copyButton: UIButton = {
+        let button = UIButton(type: .system)
+        setupActionButton(button, icon: "doc.on.doc", title: "复制")
+        button.addTarget(self, action: #selector(copyButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var shareButton: UIButton = {
+        let button = UIButton(type: .system)
+        setupActionButton(button, icon: "square.and.arrow.up", title: "分享")
+        button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var likeButton: UIButton = {
+        let button = UIButton(type: .system)
+        setupActionButton(button, icon: "hand.thumbsup", title: "有用")
+        button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var dislikeButton: UIButton = {
+        let button = UIButton(type: .system)
+        setupActionButton(button, icon: "hand.thumbsdown", title: "无用")
+        button.addTarget(self, action: #selector(dislikeButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     // MARK: - Properties
     private var isLiked: Bool = false
@@ -57,44 +121,38 @@ class AIResponseCardView: UITableViewCell {
     
     // 添加Markdown渲染方法
     private func renderMarkdown(_ markdown: String) {
-        do {
-            let down = try Down(markdownString: markdown)
-            // Fix: Use the correct options for Down library
-            if let attributedString = try? down.toAttributedString([.hardBreaks, .unsafe]) {
-                // 应用基本样式
-                let mutableAttrString = NSMutableAttributedString(attributedString: attributedString)
-                
-                // 设置默认字体和颜色
-                let range = NSRange(location: 0, length: mutableAttrString.length)
-                mutableAttrString.addAttribute(.font, value: UIFont.systemFont(ofSize: 15), range: range)
-                mutableAttrString.addAttribute(.foregroundColor, value: theme.subText, range: range)
-                
-                // 设置标题样式
-                mutableAttrString.enumerateAttribute(.font, in: range, options: []) { (value, range, _) in
-                    if let font = value as? UIFont {
-                        if font.pointSize > 15 { // 标题字体通常更大
-                            mutableAttrString.addAttribute(.foregroundColor, value: theme.text, range: range)
-                            mutableAttrString.addAttribute(.font, value: UIFont.systemFont(ofSize: font.pointSize, weight: .semibold), range: range)
-                        }
+        let down = Down(markdownString: markdown)
+        if let attributedString = try? down.toAttributedString([.hardBreaks, .unsafe]) {
+            // 应用基本样式
+            let mutableAttrString = NSMutableAttributedString(attributedString: attributedString)
+            
+            // 设置默认字体和颜色
+            let range = NSRange(location: 0, length: mutableAttrString.length)
+            mutableAttrString.addAttribute(.font, value: UIFont.systemFont(ofSize: 15), range: range)
+            mutableAttrString.addAttribute(.foregroundColor, value: theme.subText, range: range)
+            
+            // 设置标题样式
+            mutableAttrString.enumerateAttribute(.font, in: range, options: []) { (value, range, _) in
+                if let font = value as? UIFont {
+                    if font.pointSize > 15 { // 标题字体通常更大
+                        mutableAttrString.addAttribute(.foregroundColor, value: theme.text, range: range)
+                        mutableAttrString.addAttribute(.font, value: UIFont.systemFont(ofSize: font.pointSize, weight: .semibold), range: range)
                     }
                 }
-                
-                // 设置链接样式
-                mutableAttrString.enumerateAttribute(.link, in: range, options: []) { (value, range, _) in
-                    if value != nil {
-                        mutableAttrString.addAttribute(.foregroundColor, value: UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0), range: range)
-                    }
-                }
-                
-                responseTextView.attributedText = mutableAttrString
-            } else {
-                // 如果转换失败，显示纯文本
-                responseTextView.text = markdown
             }
-        } catch {
-            // 如果Down初始化失败，显示纯文本
+            
+            // 设置链接样式
+            mutableAttrString.enumerateAttribute(.link, in: range, options: []) { (value, range, _) in
+                if value != nil {
+                    mutableAttrString.addAttribute(.foregroundColor, value: UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0), range: range)
+                }
+            }
+            
+            responseTextView.attributedText = mutableAttrString
+        } else {
+            // 如果转换失败，显示纯文本
             responseTextView.text = markdown
-            print("Markdown渲染失败: \(error.localizedDescription)")
+            print("Markdown渲染失败")
         }
     }
     

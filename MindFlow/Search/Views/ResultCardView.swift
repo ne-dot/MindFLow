@@ -12,13 +12,57 @@ import Kingfisher
 class ResultCardView: UITableViewCell {
     
     // MARK: - UI Components
-    private let containerView = UIView()
-    private let cardImageView = UIImageView()
-    private let titleLabel = UILabel()
-    private let descriptionLabel = UILabel()
-    private let sourceLabel = UILabel()
-    private let favoriteButton = UIButton(type: .system)
-    private let bookmarkButton = UIButton(type: .system)
+    private lazy var containerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = theme.cardBackground
+        view.layer.cornerRadius = 12
+        view.clipsToBounds = true
+        return view
+    }()
+    
+    private lazy var cardImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
+        imageView.isHidden = true
+        return imageView
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = theme.text
+        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    private lazy var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.lightGray
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.numberOfLines = 3
+        return label
+    }()
+    
+    private lazy var sourceLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.gray
+        label.font = UIFont.systemFont(ofSize: 12)
+        return label
+    }()
+    
+    private lazy var favoriteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var bookmarkButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     // MARK: - Properties
     private var isFavorited: Bool = false
@@ -70,43 +114,12 @@ class ResultCardView: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
         
-        // 容器视图
-        containerView.backgroundColor = theme.cardBackground
-        containerView.layer.cornerRadius = 12
-        containerView.clipsToBounds = true
-        
         // 添加阴影效果
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.2
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 4
         layer.masksToBounds = false
-        
-        // 图片视图
-        cardImageView.contentMode = .scaleAspectFill
-        cardImageView.clipsToBounds = true
-        cardImageView.layer.cornerRadius = 8
-        cardImageView.isHidden = true
-        
-        // 标题
-        titleLabel.textColor = theme.text
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        titleLabel.numberOfLines = 2
-        
-        // 描述
-        descriptionLabel.textColor = UIColor.lightGray
-        descriptionLabel.font = UIFont.systemFont(ofSize: 14)
-        descriptionLabel.numberOfLines = 3
-        
-        // 来源
-        sourceLabel.textColor = UIColor.gray
-        sourceLabel.font = UIFont.systemFont(ofSize: 12)
-        
-        // 收藏按钮
-        favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
-        
-        // 书签按钮
-        bookmarkButton.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
         
         // 添加子视图
         contentView.addSubview(containerView)

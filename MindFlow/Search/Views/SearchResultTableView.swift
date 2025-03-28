@@ -32,7 +32,23 @@ struct SearchResultItem {
 class SearchResultTableView: UIView {
     
     // MARK: - UI Components
-    private let tableView = UITableView()
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
+        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        
+        // 注册单元格
+        tableView.register(ResultCardView.self, forCellReuseIdentifier: "ResultCardCell")
+        tableView.register(AIResponseCardView.self, forCellReuseIdentifier: "AIResponseCell")
+        
+        // 设置代理和数据源
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        return tableView
+    }()
     
     // MARK: - Properties
     private var searchResults: [SearchResultItem] = []
@@ -52,29 +68,12 @@ class SearchResultTableView: UIView {
     private func setupUI() {
         backgroundColor = theme.background
         
-        // 设置表格视图
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
-        tableView.showsVerticalScrollIndicator = false
-        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        
-        // 注册单元格
-        tableView.register(ResultCardView.self, forCellReuseIdentifier: "ResultCardCell")
-        tableView.register(AIResponseCardView.self, forCellReuseIdentifier: "AIResponseCell") // 注册AI回复卡片
-        
-        // 设置代理和数据源
-        tableView.delegate = self
-        tableView.dataSource = self
-        
         addSubview(tableView)
         
         // 设置约束
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
-        // 移除示例数据加载
-        // loadSampleResults()
     }
     
     // 移除loadSampleResults方法
