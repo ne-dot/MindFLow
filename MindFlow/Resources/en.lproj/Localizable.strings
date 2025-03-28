@@ -33,3 +33,29 @@
 // WelcomeView
 "welcome_title" = "Welcome to MindFlow!";
 "welcome_subtitle" = "Start searching to discover AI-powered insights";
+
+// SearchResultViewController
+"search_result_placeholder" = "Ask MindFlow anything...";
+"tab_home" = "Home";
+"tab_explore" = "Explore";
+"tab_saved" = "Saved";
+"tab_profile" = "Profile";
+
+"search_result_card1_title" = "Modern Workspace Optimization";
+"search_result_card1_desc" = "Learn how to create an efficient and ergonomic workspace that boosts productivity and creativity.";
+"search_result_card1_source" = "Productivity Hub";
+
+"search_result_card2_title" = "AI-Powered Task Management";
+"search_result_card2_desc" = "Discover how artificial intelligence can streamline your daily tasks and improve workflow efficiency.";
+"search_result_card2_source" = "Tech Insights";
+
+"search_result_card3_title" = "Data Visualization Techniques";
+"search_result_card3_desc" = "Master the art of presenting complex data in clear, engaging visual formats.";
+"search_result_card3_source" = "Data Science Daily";
+
+// AI Response Card
+"ai_response_copy" = "Copy";
+"ai_response_share" = "Share";
+"ai_response_like" = "Helpful";
+"ai_response_dislike" = "Not helpful";
+"ai_response_copied" = "Copied";

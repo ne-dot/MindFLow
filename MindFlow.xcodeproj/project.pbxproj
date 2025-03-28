@@ -12,6 +12,7 @@
 		8D0143D02D959792007846F8 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143CF2D959792007846F8 /* Alamofire */; };
 		8D0143DB2D95DFB5007846F8 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143DA2D95DFB5007846F8 /* Defaults */; };
 		8D0143E32D95E020007846F8 /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143E22D95E020007846F8 /* DefaultsMacros */; };
+		8D0143FF2D969573007846F8 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0143FE2D969573007846F8 /* Down */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 			files = (
 				8D0143DB2D95DFB5007846F8 /* Defaults in Frameworks */,
 				8D0143D02D959792007846F8 /* Alamofire in Frameworks */,
+				8D0143FF2D969573007846F8 /* Down in Frameworks */,
 				8D0143E32D95E020007846F8 /* DefaultsMacros in Frameworks */,
 				8D01436B2D954236007846F8 /* Kingfisher in Frameworks */,
 				8D0143662D953DCA007846F8 /* SnapKit in Frameworks */,
@@ -104,6 +106,7 @@
 				8D0143CF2D959792007846F8 /* Alamofire */,
 				8D0143DA2D95DFB5007846F8 /* Defaults */,
 				8D0143E22D95E020007846F8 /* DefaultsMacros */,
+				8D0143FE2D969573007846F8 /* Down */,
 			);
 			productName = MindFlow;
 			productReference = 8D0143462D95320A007846F8 /* MindFlow.app */;
@@ -139,6 +142,7 @@
 				8D0143692D954236007846F8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				8D0143CE2D959792007846F8 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				8D0143D92D95DFB5007846F8 /* XCRemoteSwiftPackageReference "Defaults" */,
+				8D0143FD2D969573007846F8 /* XCRemoteSwiftPackageReference "Down" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D0143472D95320A007846F8 /* Products */;
@@ -404,6 +408,14 @@
 				minimumVersion = 9.0.2;
 			};
 		};
+		8D0143FD2D969573007846F8 /* XCRemoteSwiftPackageReference "Down" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnxnguyen/Down";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -431,6 +443,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8D0143D92D95DFB5007846F8 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = DefaultsMacros;
+		};
+		8D0143FE2D969573007846F8 /* Down */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0143FD2D969573007846F8 /* XCRemoteSwiftPackageReference "Down" */;
+			productName = Down;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -33,3 +33,29 @@
 // WelcomeView
 "welcome_title" = "欢迎使用MindFlow!";
 "welcome_subtitle" = "开始搜索，探索AI驱动的见解";
+
+// SearchResultViewController
+"search_result_placeholder" = "向MindFlow提问...";
+"tab_home" = "首页";
+"tab_explore" = "探索";
+"tab_saved" = "收藏";
+"tab_profile" = "我的";
+
+"search_result_card1_title" = "现代工作空间优化";
+"search_result_card1_desc" = "了解如何创建高效且符合人体工程学的工作空间，提高生产力和创造力。";
+"search_result_card1_source" = "生产力中心";
+
+"search_result_card2_title" = "AI驱动的任务管理";
+"search_result_card2_desc" = "探索人工智能如何简化日常任务并提高工作流程效率。";
+"search_result_card2_source" = "科技洞察";
+
+"search_result_card3_title" = "数据可视化技术";
+"search_result_card3_desc" = "掌握以清晰、吸引人的视觉格式呈现复杂数据的艺术。";
+"search_result_card3_source" = "数据科学日报";
+
+// AI回复卡片
+"ai_response_copy" = "复制";
+"ai_response_share" = "分享";
+"ai_response_like" = "有用";
+"ai_response_dislike" = "无用";
+"ai_response_copied" = "已复制";

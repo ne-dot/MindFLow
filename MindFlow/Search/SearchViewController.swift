@@ -16,6 +16,7 @@ class SearchViewController: UIViewController {
     private var isThinking = false
     private var showResults = false
     private var suggestions: [String] = []
+    private let searchService = SearchService() // Add this line
     
     // MARK: - UI Components
     private let searchHeader = UIView()
@@ -29,7 +30,8 @@ class SearchViewController: UIViewController {
     private let recentTitle = UILabel()
     private let recentStackView = UIStackView()
     
-    private let searchResultView = SearchResultView()
+    // 修改这里：将SearchResultView替换为SearchResultTableView
+    private let searchResultView = SearchResultTableView()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -277,6 +279,7 @@ class SearchViewController: UIViewController {
     }
     
     // 修改handleSearch方法中的动画部分
+    // 修改handleSearch方法，使用SearchService
     private func handleSearch() {
         guard let searchText = searchTextField.text, !searchText.isEmpty else { return }
         
@@ -288,16 +291,86 @@ class SearchViewController: UIViewController {
         // 开始动画
         thinkingView.startAnimating()
         
-        // 模拟搜索过程，3秒后显示结果
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
-//            guard let self = self else { return }
-//            self.isThinking = false
-//            self.showResults = true
-//            self.updateUI()
-//            self.thinkingView.stopAnimating()
-//        }
+        // 调用搜索服务
+        searchService.search(query: searchText) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                self.isThinking = false
+                self.showResults = true
+                self.updateUI()
+                self.thinkingView.stopAnimating()
+                
+                switch result {
+                case .success(let response):
+                    if response.success {
+                        // 处理成功的搜索结果
+                        print("搜索成功: \(response.message)")
+                        
+                        // 这里需要将SearchResponse转换为SearchResultItem
+                        let aiResult = self.convertToAIResultItem(from: response.data)
+                        let googleResults = self.convertToResultItems(from: response.data.googleResults)
+                        
+                        // 合并AI结果和Google结果
+                        var allResults = [aiResult]
+                        allResults.append(contentsOf: googleResults)
+                        
+                        // 更新搜索结果视图
+                        self.searchResultView.updateResults(allResults)
+                    } else {
+                        // 处理API返回的错误
+                        self.showErrorAlert(message: response.message)
+                    }
+                    
+                case .failure(let error):
+                    // 处理网络错误
+                    self.showErrorAlert(message: error.localizedDescription)
+                }
+            }
+        }
     }
     
+    // 将API返回的AI摘要转换为SearchResultItem
+    private func convertToAIResultItem(from data: SearchData) -> SearchResultItem {
+        return SearchResultItem(
+            id: "ai-response",
+            title: "MindFlow AI",
+            description: data.gptSummary,
+            source: "",
+            imageUrl: nil,
+            isFavorited: false,
+            isBookmarked: false,
+            type: .aiResponse
+        )
+    }
+    
+    // 将API返回的Google结果转换为SearchResultItem数组
+    private func convertToResultItems(from googleResults: [GoogleResult]) -> [SearchResultItem] {
+        return googleResults.enumerated().map { index, result in
+            return SearchResultItem(
+                id: "google-\(index)",
+                title: result.title,
+                description: result.snippet,
+                source: result.source,
+                imageUrl: nil, // Google结果中没有图片URL
+                isFavorited: false,
+                isBookmarked: false,
+                type: .normalResult
+            )
+        }
+    }
+    
+    // 显示错误提示
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "搜索失败",
+            message: message,
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "确定", style: .default))
+        present(alert, animated: true)
+    }
     private func updateUI() {
         recentSearchesView.isHidden = isThinking || showResults
         thinkingView.isHidden = !isThinking
