@@ -15,14 +15,39 @@ class SearchViewController: UIViewController {
     var onClose: (() -> Void)?
     private var isThinking = false
     private var showResults = false
-    private var suggestions: [String] = []
-    private let searchService = SearchService() // Add this line
     
+    // 使用Presenter替代直接的Service调用
+    private let presenter: SearchPresenter
     
     // MARK: - UI Components
-    private let searchHeader = UIView()
-    private let backButton = UIButton(type: .system)
-    private let searchInputContainer = UIView()
+    // 将所有UI组件改为惰性初始化
+    private lazy var searchHeader: UIView = {
+        let view = UIView()
+        return view
+    }()
+    
+    private lazy var backButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "arrow.backward"), for: .normal)
+        button.tintColor = theme.text
+        return button
+    }()
+    
+    private lazy var searchInputContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = theme.background
+        
+        // 添加底部边框线
+        let borderLine = UIView()
+        borderLine.backgroundColor = theme.border
+        view.addSubview(borderLine)
+        borderLine.snp.makeConstraints { make in
+            make.left.right.bottom.equalToSuperview()
+            make.height.equalTo(0.5)
+        }
+        
+        return view
+    }()
     
     // 将UITextView替换为PlaceholderTextView
     private lazy var searchTextField: PlaceholderTextView = {
@@ -38,17 +63,59 @@ class SearchViewController: UIViewController {
         // 设置占位文本
         textView.placeholder = "Search anything..."
         textView.placeholderColor = theme.searchPlaceholder
+        textView.delegate = self
         return textView
     }()
     
     // 添加一个属性来记录文本视图的初始高度
     private var initialTextViewHeight: CGFloat = 36
-    private let recentSearchesView = UIView()
-    private let recentTitle = UILabel()
-    private let recentStackView = UIStackView()
+    
+    private lazy var recentSearchesView: UIView = {
+        let view = UIView()
+        return view
+    }()
+    
+    private lazy var recentTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Recent Searches"
+        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.textColor = theme.text
+        return label
+    }()
+    
+    private lazy var recentStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
     
     // 修改这里：将SearchResultView替换为SearchResultTableView
-    private let searchResultView = SearchResultTableView()
+    private lazy var searchResultView: SearchResultTableView = {
+        let tableView = SearchResultTableView()
+        tableView.isHidden = true
+        return tableView
+    }()
+    
+    private lazy var thinkingView: ThinkingView = {
+        let view = ThinkingView()
+        view.isHidden = true
+        return view
+    }()
+    
+    // MARK: - Initialization
+    init(presenter: SearchPresenter = SearchPresenter()) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+        self.presenter.view = self
+    }
+    
+    required init?(coder: NSCoder) {
+        self.presenter = SearchPresenter()
+        super.init(coder: coder)
+        self.presenter.view = self
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -65,20 +132,14 @@ class SearchViewController: UIViewController {
     
     // MARK: - Public Methods
     func configure(with suggestions: [String]) {
-        self.suggestions = suggestions
-        setupRecentSearches()
+        presenter.setSuggestions(suggestions)
     }
     
     // MARK: - UI Setup
-    // 修改属性声明部分
-    private let thinkingView = ThinkingView()
-    
-    // 删除原来的setupThinkingView方法，并在setupUI方法中调用
     private func setupUI() {
         addAllSubviews()
         setupAllConstraints()
         setupSearchHeader()
-        // 删除setupThinkingView()调用
         setupSearchResultView()
         
         // 初始状态
@@ -206,6 +267,7 @@ class SearchViewController: UIViewController {
         recentStackView.distribution = .fillEqually
         
         // 添加搜索历史项
+        let suggestions = presenter.getSuggestions()
         for suggestion in suggestions {
             let itemView = createRecentSearchItem(text: suggestion)
             recentStackView.addArrangedSubview(itemView)
@@ -243,6 +305,9 @@ class SearchViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(recentItemTapped(_:)))
         itemView.addGestureRecognizer(tapGesture)
         itemView.isUserInteractionEnabled = true
+        
+        // 使用presenter获取suggestions
+        let suggestions = presenter.getSuggestions()
         itemView.tag = suggestions.firstIndex(of: text) ?? 0
         
         itemView.snp.makeConstraints { make in
@@ -260,7 +325,6 @@ class SearchViewController: UIViewController {
     // MARK: - Actions
     private func setupActions() {
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        // 不再使用editingChanged事件，而是设置textView的delegate
         searchTextField.delegate = self
     }
     
@@ -281,67 +345,20 @@ class SearchViewController: UIViewController {
     @objc private func backButtonTapped() {
         onClose?()
     }
-
-    @objc private func searchTextChanged() {
-        
-    }
     
     @objc private func recentItemTapped(_ gesture: UITapGestureRecognizer) {
-        if let view = gesture.view, view.tag < suggestions.count {
-            let suggestion = suggestions[view.tag]
-            searchTextField.text = suggestion
-            searchTextField.textColor = theme.text  // 确保文本颜色正确
-            handleSearch()
-        }
-    }
-    
-    // 修改handleSearch方法中的动画部分
-    private func handleSearch() {
-        guard let searchText = searchTextField.text, !searchText.isEmpty else { return }
-        
-        // 显示思考状态
-        isThinking = true
-        showResults = false
-        updateUI()
-        
-        // 开始动画
-        thinkingView.startAnimating()
-        
-        // 调用搜索服务
-        searchService.search(query: searchText) { [weak self] result in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.isThinking = false
-                self.showResults = true
-                self.updateUI()
-                self.thinkingView.stopAnimating()
-                
-                switch result {
-                case .success(let response):
-                    if response.success {
-                        // 处理成功的搜索结果
-                        print("搜索成功: \(response.message)")
-                        
-                        // 使用SearchService处理数据
-                        let searchResults = self.searchService.processSearchResults(data: response.data)
-                        
-                        // 更新搜索结果视图
-                        self.searchResultView.updateResults(searchResults)
-                    } else {
-                        // 处理API返回的错误
-                        self.showErrorAlert(message: response.message)
-                    }
-                    
-                case .failure(let error):
-                    // 处理网络错误
-                    self.showErrorAlert(message: error.localizedDescription)
-                }
+        if let view = gesture.view {
+            let suggestions = presenter.getSuggestions()
+            if view.tag < suggestions.count {
+                let suggestion = suggestions[view.tag]
+                searchTextField.text = suggestion
+                searchTextField.textColor = theme.text  // 确保文本颜色正确
+                presenter.performSearch(query: suggestion)
             }
         }
     }
     
-    // 修改updateUI方法中的相关部分
+    // 更新UI状态的方法
     private func updateUI() {
         recentSearchesView.isHidden = isThinking || showResults
         thinkingView.isHidden = !isThinking
@@ -424,6 +441,41 @@ class SearchViewController: UIViewController {
     }
 }
 
+// MARK: - SearchViewProtocol
+extension SearchViewController: SearchViewProtocol {
+    func showThinkingView() {
+        isThinking = true
+        showResults = false
+        updateUI()
+        thinkingView.startAnimating()
+    }
+    
+    func showResultsView() {
+        isThinking = false
+        showResults = true
+        updateUI()
+        thinkingView.stopAnimating()
+    }
+    
+    func updateRecentSearches(with suggestions: [String]) {
+        // 清除现有的搜索历史
+        recentStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        // 添加搜索历史项
+        for suggestion in suggestions {
+            let itemView = createRecentSearchItem(text: suggestion)
+            recentStackView.addArrangedSubview(itemView)
+        }
+    }
+    
+    func updateSearchResults(with results: [SearchResultItem]) {
+        searchResultView.updateResults(results)
+    }
+    
+    func showError(message: String) {
+        showErrorAlert(message: message)
+    }
+}
 
 // MARK: - UITextViewDelegate
 extension SearchViewController: UITextViewDelegate {
@@ -454,22 +506,11 @@ extension SearchViewController: UITextViewDelegate {
         // Handle return key for search
         if text == "\n" {
             if !textView.text.isEmpty {
-                handleSearch()
+                presenter.performSearch(query: textView.text)
             }
             textView.resignFirstResponder()
             return false
         }
         return true
     }
-
 }
-
-
-// 移除原来的UITextFieldDelegate扩展
-// extension SearchViewController: UITextFieldDelegate {
-//     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//         handleSearch()
-//         textField.resignFirstResponder()
-//         return true
-//     }
-// }
