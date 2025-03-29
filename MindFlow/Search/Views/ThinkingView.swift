@@ -11,14 +11,6 @@ import Kingfisher
 
 class ThinkingView: UIView {
     
-    // MARK: - UI Components
-    private lazy var backgroundImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.alpha = 0.1
-        return imageView
-    }()
-    
     private lazy var breathingView: UIView = {
         let view = UIView()
         return view
@@ -84,31 +76,10 @@ class ThinkingView: UIView {
     
     // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = .white
-        
-        setupBackgroundImage()
+        backgroundColor = theme.background
         setupBreathingView()
         setupThinkingText()
         setupSubtext()
-    }
-    
-    private func setupBackgroundImage() {
-        addSubview(backgroundImageView)
-        
-        // 使用Kingfisher加载网络图片
-        let imageUrl = URL(string: "https://ai-public.mastergo.com/ai/img_res/a9f71a0238d81cc77127afc56deb7493.jpg")
-        backgroundImageView.kf.setImage(
-            with: imageUrl,
-            placeholder: nil,
-            options: [
-                .transition(.fade(0.3)),
-                .cacheOriginalImage
-            ]
-        )
-        
-        backgroundImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
     }
     
     private func setupBreathingView() {

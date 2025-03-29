@@ -18,14 +18,31 @@ class SearchViewController: UIViewController {
     private var suggestions: [String] = []
     private let searchService = SearchService() // Add this line
     
+    
     // MARK: - UI Components
     private let searchHeader = UIView()
     private let backButton = UIButton(type: .system)
     private let searchInputContainer = UIView()
-    private let searchIcon = UIImageView()
-    private let searchTextField = UITextField()
-    private let clearButton = UIButton(type: .system)
     
+    // 将UITextView替换为PlaceholderTextView
+    private lazy var searchTextField: PlaceholderTextView = {
+        let textView = PlaceholderTextView()
+        textView.textColor = theme.text
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.backgroundColor = .clear
+        textView.isScrollEnabled = true
+        textView.returnKeyType = .search
+        textView.autocorrectionType = .no
+        textView.autocapitalizationType = .none
+        textView.textContainerInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 24) // 右侧留出空间给清除按钮
+        // 设置占位文本
+        textView.placeholder = "Search anything..."
+        textView.placeholderColor = theme.searchPlaceholder
+        return textView
+    }()
+    
+    // 添加一个属性来记录文本视图的初始高度
+    private var initialTextViewHeight: CGFloat = 36
     private let recentSearchesView = UIView()
     private let recentTitle = UILabel()
     private let recentStackView = UIStackView()
@@ -72,10 +89,8 @@ class SearchViewController: UIViewController {
     private func addAllSubviews() {
         view.addSubview(searchHeader)
         searchHeader.addSubview(backButton)
-        searchHeader.addSubview(searchInputContainer)
-        searchInputContainer.addSubview(searchIcon)
+        view.addSubview(searchInputContainer)
         searchInputContainer.addSubview(searchTextField)
-        searchInputContainer.addSubview(clearButton)
         
         view.addSubview(recentSearchesView)
         recentSearchesView.addSubview(recentTitle)
@@ -90,7 +105,7 @@ class SearchViewController: UIViewController {
         searchHeader.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(12)
             make.left.right.equalToSuperview()
-            make.height.equalTo(60)
+            make.height.equalTo(40)
         }
         
         backButton.snp.makeConstraints { make in
@@ -100,33 +115,24 @@ class SearchViewController: UIViewController {
         }
         
         searchInputContainer.snp.makeConstraints { make in
-            make.left.equalTo(backButton.snp.right).offset(12)
-            make.right.equalToSuperview().offset(-16)
-            make.centerY.equalToSuperview()
-            make.height.equalTo(50)
-        }
-        
-        searchIcon.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(18)
-        }
-        
-        searchTextField.snp.makeConstraints { make in
-            make.left.equalTo(searchIcon.snp.right).offset(8)
-            make.right.equalTo(clearButton.snp.left).offset(-8)
-            make.centerY.equalToSuperview()
-        }
-        
-        clearButton.snp.makeConstraints { make in
             make.right.equalToSuperview().offset(-16)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(18)
+            // 不再固定高度，而是根据内容自适应
+            make.top.equalTo(searchHeader.snp.bottom).offset(0)
+        }
+    
+        searchTextField.snp.makeConstraints { make in
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+            make.top.equalTo(12)
+            make.bottom.equalTo(-12)
+            // 设置初始高度
+            make.height.equalTo(initialTextViewHeight)
         }
         
         // 最近搜索视图约束
         recentSearchesView.snp.makeConstraints { make in
-            make.top.equalTo(searchHeader.snp.bottom).offset(24)
+            make.top.equalTo(searchInputContainer.snp.bottom).offset(24)
             make.left.right.equalToSuperview()
             make.bottom.equalToSuperview()
         }
@@ -145,13 +151,13 @@ class SearchViewController: UIViewController {
         
         // 思考中视图约束
         thinkingView.snp.makeConstraints { make in
-            make.top.equalTo(searchHeader.snp.bottom)
+            make.top.equalTo(searchInputContainer.snp.bottom)
             make.left.right.bottom.equalToSuperview()
         }
         
         // 搜索结果视图约束
         searchResultView.snp.makeConstraints { make in
-            make.top.equalTo(searchHeader.snp.bottom)
+            make.top.equalTo(searchInputContainer.snp.bottom)
             make.left.right.bottom.equalToSuperview()
         }
     }
@@ -162,29 +168,27 @@ class SearchViewController: UIViewController {
         backButton.tintColor = theme.text
         
         // 搜索输入容器
-        searchInputContainer.backgroundColor = theme.textBackground
-        searchInputContainer.layer.cornerRadius = 25
+        searchInputContainer.backgroundColor = theme.background
         
-        // 搜索图标
-        searchIcon.image = UIImage(systemName: "magnifyingglass")
-        searchIcon.tintColor = theme.iconColor
+        // 添加底部边框线
+        let borderLine = UIView()
+        borderLine.backgroundColor = theme.border
+        searchInputContainer.addSubview(borderLine)
+        borderLine.snp.makeConstraints { make in
+            make.left.right.bottom.equalToSuperview()
+            make.height.equalTo(0.5)
+        }
         
-        // 搜索文本框
-        searchTextField.placeholder = "Search anything..."
-        searchTextField.textColor = theme.text
-        searchTextField.attributedPlaceholder = NSAttributedString(
-            string: "Search anything...",
-            attributes: [NSAttributedString.Key.foregroundColor: theme.searchPlaceholder]
-        )
-        searchTextField.borderStyle = .none
+        // 搜索文本框 - 移除不适用于UITextView的属性
+        // 不需要设置placeholder，因为我们已经在初始化时设置了text和textColor
+        // 不需要设置borderStyle，因为UITextView没有这个属性
         searchTextField.returnKeyType = .search
-        searchTextField.clearButtonMode = .never
         searchTextField.autocorrectionType = .no
         
         // 清除按钮
-        clearButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        clearButton.tintColor = theme.iconColor
-        clearButton.isHidden = true
+//        clearButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+//        clearButton.tintColor = theme.iconColor
+//        clearButton.isHidden = true
     }
     
     private func setupRecentSearches() {
@@ -256,35 +260,42 @@ class SearchViewController: UIViewController {
     // MARK: - Actions
     private func setupActions() {
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
-        searchTextField.addTarget(self, action: #selector(searchTextChanged), for: .editingChanged)
+        // 不再使用editingChanged事件，而是设置textView的delegate
         searchTextField.delegate = self
+    }
+    
+    @objc private func clearButtonTapped() {
+        // Just clear the text - the placeholder will show automatically
+        searchTextField.text = ""
+        
+        // Reset text view height
+        searchTextField.snp.updateConstraints { make in
+            make.height.equalTo(initialTextViewHeight)
+        }
+        
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     @objc private func backButtonTapped() {
         onClose?()
     }
-    
-    @objc private func clearButtonTapped() {
-        searchTextField.text = ""
-        clearButton.isHidden = true
-    }
-    
+
     @objc private func searchTextChanged() {
-        clearButton.isHidden = searchTextField.text?.isEmpty ?? true
+        
     }
     
     @objc private func recentItemTapped(_ gesture: UITapGestureRecognizer) {
         if let view = gesture.view, view.tag < suggestions.count {
             let suggestion = suggestions[view.tag]
             searchTextField.text = suggestion
-            clearButton.isHidden = false
+            searchTextField.textColor = theme.text  // 确保文本颜色正确
             handleSearch()
         }
     }
     
     // 修改handleSearch方法中的动画部分
-    // 修改handleSearch方法，使用SearchService
     private func handleSearch() {
         guard let searchText = searchTextField.text, !searchText.isEmpty else { return }
         
@@ -330,6 +341,76 @@ class SearchViewController: UIViewController {
         }
     }
     
+    // 修改updateUI方法中的相关部分
+    private func updateUI() {
+        recentSearchesView.isHidden = isThinking || showResults
+        thinkingView.isHidden = !isThinking
+        searchResultView.isHidden = !showResults
+        
+        // 更新搜索文本框状态
+        if isThinking || showResults {
+            // 设置为不可编辑的标题样式
+            searchTextField.isEditable = false
+            searchTextField.isScrollEnabled = false
+            searchTextField.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+            
+            // 移除占位符（如果有）
+            if searchTextField.text.isEmpty {
+                searchTextField.placeholder = ""
+            }
+            
+            // 计算文本内容的实际高度
+            let size = CGSize(width: searchTextField.frame.width, height: .infinity)
+            let estimatedSize = searchTextField.sizeThatFits(size)
+            
+            // 设置最小高度，但允许根据内容增加高度
+            let minHeight: CGFloat = 44
+            let newHeight = max(estimatedSize.height, minHeight)
+            
+            // 更新高度约束
+            searchTextField.snp.updateConstraints { make in
+                make.height.equalTo(newHeight)
+            }
+            
+            // 更新底部边框线的可见性
+            updateBorderLineVisibility(hidden: false)
+        } else {
+            // 恢复为可编辑状态
+            searchTextField.isEditable = true
+            searchTextField.isScrollEnabled = true
+            searchTextField.font = UIFont.systemFont(ofSize: 16)
+            
+            // 恢复占位符
+            if searchTextField.text.isEmpty {
+                searchTextField.placeholder = "Search anything..."
+            }
+            
+            // 恢复自适应高度
+            let size = CGSize(width: searchTextField.frame.width, height: .infinity)
+            let estimatedSize = searchTextField.sizeThatFits(size)
+            let newHeight = min(max(estimatedSize.height, initialTextViewHeight), 100)
+            
+            searchTextField.snp.updateConstraints { make in
+                make.height.equalTo(newHeight)
+            }
+            
+            // 更新底部边框线的可见性
+            updateBorderLineVisibility(hidden: true)
+        }
+        
+        // 平滑动画
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    // 添加一个方法来控制底部边框线的可见性
+    private func updateBorderLineVisibility(hidden: Bool) {
+        if let borderLine = searchInputContainer.subviews.first(where: { $0 != searchTextField }) {
+            borderLine.isHidden = hidden
+        }
+    }
+    
     // 显示错误提示
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(
@@ -341,18 +422,54 @@ class SearchViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "确定", style: .default))
         present(alert, animated: true)
     }
-    private func updateUI() {
-        recentSearchesView.isHidden = isThinking || showResults
-        thinkingView.isHidden = !isThinking
-        searchResultView.isHidden = !showResults
-    }
 }
 
-// MARK: - UITextFieldDelegate
-extension SearchViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        handleSearch()
-        textField.resignFirstResponder()
+
+// MARK: - UITextViewDelegate
+extension SearchViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        // Calculate text content height
+        let size = CGSize(width: textView.frame.width, height: .infinity)
+        let estimatedSize = textView.sizeThatFits(size)
+        
+        // Set minimum and maximum height
+        let minHeight: CGFloat = initialTextViewHeight
+        let maxHeight: CGFloat = 100
+        
+        // Calculate new height (between min and max)
+        let newHeight = min(max(estimatedSize.height, minHeight), maxHeight)
+        
+        // Update height constraint
+        textView.snp.updateConstraints { make in
+            make.height.equalTo(newHeight)
+        }
+        
+        // Smooth animation
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        // Handle return key for search
+        if text == "\n" {
+            if !textView.text.isEmpty {
+                handleSearch()
+            }
+            textView.resignFirstResponder()
+            return false
+        }
         return true
     }
+
 }
+
+
+// 移除原来的UITextFieldDelegate扩展
+// extension SearchViewController: UITextFieldDelegate {
+//     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//         handleSearch()
+//         textField.resignFirstResponder()
+//         return true
+//     }
+// }
