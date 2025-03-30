@@ -353,7 +353,7 @@ class SearchViewController: UIViewController {
                 let suggestion = suggestions[view.tag]
                 searchTextField.text = suggestion
                 searchTextField.textColor = theme.text  // 确保文本颜色正确
-                presenter.performSearch(query: suggestion)
+                presenter.performStreamSearch(query: suggestion)
             }
         }
     }
@@ -441,8 +441,25 @@ class SearchViewController: UIViewController {
     }
 }
 
-// MARK: - SearchViewProtocol
+// MARK: - SearchViewProtocol 实现
 extension SearchViewController: SearchViewProtocol {
+    // 实现流式搜索相关方法
+    func clearSearchContent() {
+        searchResultView.clearContent()
+    }
+    
+    func setSearchQueryTitle(_ query: String) {
+        searchResultView.setQueryTitle(query)
+    }
+    
+    func appendSearchContent(_ content: String) {
+        searchResultView.appendContent(content)
+    }
+    
+    func updateSearchSources(sources: [String]) {
+        searchResultView.updateSources(sources: sources)
+    }
+    
     func showThinkingView() {
         isThinking = true
         showResults = false
@@ -475,6 +492,15 @@ extension SearchViewController: SearchViewProtocol {
     func showError(message: String) {
         showErrorAlert(message: message)
     }
+    
+    // 在搜索按钮点击或搜索栏提交时调用
+    func performSearch(query: String) {
+        // 保存搜索记录
+//        saveSearchQuery(query)
+        
+        // 使用流式搜索替代普通搜索
+        presenter.performStreamSearch(query: query)
+    }
 }
 
 // MARK: - UITextViewDelegate
@@ -506,7 +532,7 @@ extension SearchViewController: UITextViewDelegate {
         // Handle return key for search
         if text == "\n" {
             if !textView.text.isEmpty {
-                presenter.performSearch(query: textView.text)
+                presenter.performStreamSearch(query: textView.text)
             }
             textView.resignFirstResponder()
             return false

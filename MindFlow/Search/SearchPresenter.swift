@@ -6,14 +6,22 @@
 //
 
 import Foundation
+import Alamofire
 
 // View协议定义Presenter可以调用的方法
+// 在 SearchViewProtocol 中添加流式搜索相关的方法
 protocol SearchViewProtocol: AnyObject {
     func showThinkingView()
     func showResultsView()
     func updateRecentSearches(with suggestions: [String])
     func updateSearchResults(with results: [SearchResultItem])
     func showError(message: String)
+    
+    // 新增流式搜索相关方法
+    func clearSearchContent()
+    func setSearchQueryTitle(_ query: String)
+    func appendSearchContent(_ content: String)
+    func updateSearchSources(sources: [String])
 }
 
 class SearchPresenter {
@@ -41,35 +49,83 @@ class SearchPresenter {
         return suggestions
     }
     
-    // 执行搜索
-    func performSearch(query: String) {
+    // 添加流式搜索相关属性
+    private var streamRequest: DataRequest?
+    
+    // 执行流式搜索
+    func performStreamSearch(query: String) {
         guard !query.isEmpty else { return }
+        
+        // 取消之前的请求
+        cancelStreamRequest()
         
         // 通知View显示思考状态
         view?.showThinkingView()
+        view?.clearSearchContent()
+        view?.setSearchQueryTitle(query)
         
-        // 调用搜索服务
-        searchService.search(query: query) { [weak self] result in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    if response.success {
-                        // 处理成功的搜索结果
-                        let searchResults = self.searchService.processSearchResults(data: response.data)
-                        self.view?.updateSearchResults(with: searchResults)
-                        self.view?.showResultsView()
-                    } else {
-                        // 处理API返回的错误
-                        self.view?.showError(message: response.message)
-                    }
+        // 调用搜索服务的流式搜索方法
+        streamRequest = searchService.streamSearch(
+            query: query,
+            onEvent: { [weak self] event in
+                self?.handleStreamEvent(event)
+            },
+            onError: { [weak self] error in
+                DispatchQueue.main.async {
+                    self?.view?.showError(message: error.localizedDescription)
+                }
+            },
+            onCompletion: { [weak self] in
+                DispatchQueue.main.async {
+                    // 流式请求完成后的处理
+                    self?.streamRequest = nil
                     
-                case .failure(let error):
-                    // 处理网络错误
-                    self.view?.showError(message: error.localizedDescription)
+                    // 可以在这里添加完成后的逻辑，比如更新来源
+                    let sources = self?.extractSourcesFromContent() ?? []
+                    self?.view?.updateSearchSources(sources: sources)
+                }
+            }
+        )
+    }
+    
+    // 取消流式请求
+    func cancelStreamRequest() {
+        streamRequest?.cancel()
+        streamRequest = nil
+    }
+    
+    // 处理流式事件
+    private func handleStreamEvent(_ event: StreamEvent) {
+        DispatchQueue.main.async { [weak self] in
+            switch event.event {
+            case .start:
+                if let query = event.data.query {
+                    self?.view?.showResultsView()
+                    self?.view?.setSearchQueryTitle(query)
+                }
+                
+            case .chunk:
+                if let content = event.data.content {
+                    self?.view?.appendSearchContent(content)
+                }
+                
+            case .end:
+                break
+                // 结束事件处理
+//                self?.view?.showResultsView()
+                
+            case .error:
+                if let errorMessage = event.data.error {
+                    self?.view?.showError(message: errorMessage)
                 }
             }
         }
+    }
+    
+    // 从内容中提取来源
+    private func extractSourcesFromContent() -> [String] {
+        // 这里可以实现从内容中提取来源的逻辑
+        // 简单示例
+        return ["搜索结果", "相关网站"]
     }
 }

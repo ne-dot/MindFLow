@@ -37,6 +37,10 @@ class SearchResultTableView: UIView {
     // MARK: - Properties
     private var searchResults: [SearchResultItem] = []
     
+    // 添加流式数据相关属性
+    private var currentContent: String = ""
+    private var aiResponseItem: SearchResultItem?
+    
     // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -73,6 +77,138 @@ class SearchResultTableView: UIView {
     func updateResults(_ results: [SearchResultItem]) {
         self.searchResults = results
         tableView.reloadData()
+    }
+    
+    // 添加流式数据相关方法
+    
+    // 清除当前内容
+    func clearContent() {
+        currentContent = ""
+        
+        // 创建或更新AI响应项
+        if let index = searchResults.firstIndex(where: { $0.id == "ai-response-stream" }) {
+            let currentItem = searchResults[index]
+            
+            // 创建一个新的AI响应项，但description为空
+            let updatedItem = SearchResultItem(
+                id: "ai-response-stream",
+                title: currentItem.title,
+                description: "",
+                contextLink: currentItem.contextLink,
+                source: currentItem.source,
+                imageUrl: currentItem.imageUrl,
+                isFavorited: currentItem.isFavorited,
+                isBookmarked: currentItem.isBookmarked,
+                type: .aiResponse
+            )
+            
+            // 替换现有项
+            searchResults[index] = updatedItem
+            aiResponseItem = updatedItem
+            
+            tableView.reloadData()
+        } else {
+            // 如果不存在，创建一个新的AI响应项
+            let newItem = SearchResultItem(
+                id: "ai-response-stream",
+                title: "MindFlow AI",
+                description: "",
+                contextLink: "",
+                source: "",
+                imageUrl: nil,
+                isFavorited: false,
+                isBookmarked: false,
+                type: .aiResponse
+            )
+            
+            // 添加到结果列表的开头
+            searchResults.insert(newItem, at: 0)
+            aiResponseItem = newItem
+            
+            tableView.reloadData()
+        }
+    }
+    
+    // 设置查询标题
+    func setQueryTitle(_ query: String) {
+        // 由于title是let常量，我们不能直接修改它
+        // 创建一个新的AI响应项来替换现有的
+        if let index = searchResults.firstIndex(where: { $0.id == "ai-response-stream" }) {
+            let updatedItem = SearchResultItem(
+                id: "ai-response-stream",
+                title: "搜索结果: \(query)",
+                description: currentContent,
+                contextLink: "",
+                source: "",
+                imageUrl: nil,
+                isFavorited: false,
+                isBookmarked: false,
+                type: .aiResponse
+            )
+            
+            // 替换现有项
+            searchResults[index] = updatedItem
+            aiResponseItem = updatedItem
+            
+            // 更新表格中的第一行
+            let indexPath = IndexPath(row: index, section: 0)
+            tableView.reloadRows(at: [indexPath], with: .none)
+        }
+    }
+    
+    // 添加内容块
+    func appendContent(_ content: String) {
+        currentContent += content
+        
+        // 由于description是let常量，我们需要创建一个新的AI响应项
+        if let index = searchResults.firstIndex(where: { $0.id == "ai-response-stream" }) {
+            let currentItem = searchResults[index]
+            
+            let updatedItem = SearchResultItem(
+                id: "ai-response-stream",
+                title: currentItem.title,
+                description: currentContent,
+                contextLink: currentItem.contextLink,
+                source: currentItem.source,
+                imageUrl: currentItem.imageUrl,
+                isFavorited: currentItem.isFavorited,
+                isBookmarked: currentItem.isBookmarked,
+                type: .aiResponse
+            )
+            
+            // 替换现有项
+            searchResults[index] = updatedItem
+            aiResponseItem = updatedItem
+            
+            // 更新表格中的相应行
+            let indexPath = IndexPath(row: index, section: 0)
+            tableView.reloadRows(at: [indexPath], with: .none)
+            
+            // 滚动到顶部以确保用户可以看到更新的内容
+            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+        }
+    }
+    
+    // 显示错误信息
+    func showError(message: String) {
+        let errorText = "\n\n[错误: \(message)]"
+        appendContent(errorText)
+    }
+    
+    // 更新来源
+    func updateSources(sources: [String]) {
+        // 在这个实现中，我们可以将来源添加为普通的搜索结果
+        // 或者在AI响应中添加来源信息
+        // 这里简单地将它们添加到AI响应的描述中
+        
+        if !sources.isEmpty {
+            var sourcesText = "\n\n来源:\n"
+            for source in sources {
+                sourcesText += "- \(source)\n"
+            }
+            
+            appendContent(sourcesText)
+        }
     }
 }
 

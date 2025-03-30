@@ -27,6 +27,32 @@ struct SearchResultItem {
     let type: ResultType // 新增类型字段
 }
 
+// 添加流式事件类型
+enum StreamEventType: String, Codable {
+    case start = "start"
+    case chunk = "chunk"
+    case end = "end"
+    case error = "error"
+}
+
+// 添加流式事件模型
+struct StreamEvent: Codable {
+    let event: StreamEventType
+    let data: StreamEventData
+}
+
+// 添加流式事件数据模型
+struct StreamEventData: Codable {
+    let content: String?
+    let query: String?
+    let error: String?
+}
+
+// 添加流式搜索回调类型
+typealias StreamHandler = (StreamEvent) -> Void
+typealias StreamErrorHandler = (Error) -> Void
+typealias StreamCompletionHandler = () -> Void
+
 class SearchService {
     // 移除单例模式
     
@@ -35,16 +61,95 @@ class SearchService {
         return AppConfig.shared.baseURL + "/api/search"
     }
     
+    // 从配置获取流式搜索API地址
+    private var streamSearchAPIURL: String {
+        return AppConfig.shared.baseURL + "/api/search"
+    }
+    
     // 初始化方法
     init() {}
     
-    // 执行搜索请求
-    func search(query: String, completion: @escaping (Result<SearchResponse, Error>) -> Void) {
+    // 添加流式搜索方法
+    func streamSearch(
+        query: String,
+        onEvent: @escaping StreamHandler,
+        onError: @escaping StreamErrorHandler,
+        onCompletion: @escaping StreamCompletionHandler
+    ) -> DataRequest {
         let parameters: Parameters = [
             "query": query
         ]
         
-        NetworkManager.shared.post(searchAPIURL, parameters: parameters, completion: completion)
+        print("开始流式搜索，查询: \(query)")
+        
+        // 使用 NetworkManager 处理流式请求
+        var buffer = ""
+        
+        return NetworkManager.shared.streamRequest(
+            streamSearchAPIURL,
+            method: .post,
+            parameters: parameters,
+            onDataStream: { data, response in
+                // 将新接收的数据添加到缓冲区
+                if let string = String(data: data, encoding: .utf8) {
+                    print("收到数据块: \(string)")
+                    buffer += string
+                    
+                    // 处理接收到的数据块
+                    // 查找所有完整的事件（以data:开头的行）
+                    let pattern = "data: .*?(?=\\ndata:|$)"
+                    if let regex = try? NSRegularExpression(pattern: pattern, options: [.dotMatchesLineSeparators]) {
+                        let nsString = buffer as NSString
+                        let matches = regex.matches(in: buffer, options: [], range: NSRange(location: 0, length: nsString.length))
+                        
+                        print("找到 \(matches.count) 个匹配项")
+                        
+                        // 处理找到的每个事件
+                        for match in matches {
+                            let eventString = nsString.substring(with: match.range)
+                                .trimmingCharacters(in: .whitespacesAndNewlines)
+                            
+                            print("处理事件: \(eventString)")
+                            
+                            if eventString.hasPrefix("data: ") {
+                                let jsonString = eventString.dropFirst(6) // 移除 "data: " 前缀
+                                print("解析JSON: \(jsonString)")
+                                self.processEventString(String(jsonString), onEvent: onEvent)
+                            }
+                        }
+                        
+                        // 如果找到了匹配项，清除已处理的部分
+                        if let lastMatch = matches.last {
+                            let endIndex = lastMatch.range.location + lastMatch.range.length
+                            let oldBuffer = buffer
+                            buffer = nsString.substring(from: endIndex)
+                            print("缓冲区更新: \n旧: \(oldBuffer)\n新: \(buffer)")
+                        }
+                    }
+                }
+            },
+            onError: { error in
+                print("流式搜索错误: \(error)")
+                onError(error)
+            },
+            onCompletion: {
+                print("流式搜索完成")
+                onCompletion()
+            }
+        )
+    }
+    
+    // 处理事件字符串
+    private func processEventString(_ eventString: String, onEvent: @escaping StreamHandler) {
+        do {
+            if let data = eventString.data(using: .utf8) {
+                let event = try JSONDecoder().decode(StreamEvent.self, from: data)
+                print("成功解析事件: \(event.event.rawValue), 内容: \(event.data.content ?? "无内容")")
+                onEvent(event)
+            }
+        } catch {
+            print("解析事件错误: \(error), 原始字符串: \(eventString)")
+        }
     }
     
     // 添加数据处理方法

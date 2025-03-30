@@ -8,6 +8,7 @@
 import Foundation
 import Alamofire
 import UIKit
+import ObjectiveC
 
 class NetworkManager {
     
@@ -237,5 +238,127 @@ class NetworkManager {
                     completion(.failure(error))
                 }
             }
+    }
+    
+    // MARK: - 流式请求
+    func streamRequest(
+        _ url: String,
+        method: HTTPMethod = .post,
+        parameters: Parameters? = nil,
+        encoding: ParameterEncoding = JSONEncoding.default,
+        headers: HTTPHeaders? = nil,
+        onDataStream: @escaping (Data, HTTPURLResponse) -> Void,
+        onError: @escaping (Error) -> Void,
+        onCompletion: @escaping () -> Void
+    ) -> DataRequest {
+        print("NetworkManager: 开始流式请求 - \(url)")
+        
+        // 获取默认 headers
+        var requestHeaders = headers ?? defaultHeaders
+        
+        // 添加流式请求特定的 headers
+        requestHeaders["Accept"] = "text/event-stream"
+        requestHeaders["Cache-Control"] = "no-cache"
+        
+        // 创建URLRequest
+        guard let requestURL = URL(string: url) else {
+            let error = NSError(domain: "NetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+            onError(error)
+            return AF.request("https://example.com") // 返回一个虚拟请求
+        }
+        
+        var urlRequest = URLRequest(url: requestURL)
+        urlRequest.httpMethod = method.rawValue
+        
+        // 添加headers
+        for (key, value) in requestHeaders.dictionary {
+            urlRequest.setValue(value, forHTTPHeaderField: key)
+        }
+        
+        // 添加参数
+        if let parameters = parameters {
+            do {
+                urlRequest = try encoding.encode(urlRequest, with: parameters)
+                if let httpBody = urlRequest.httpBody, let bodyString = String(data: httpBody, encoding: .utf8) {
+                    print("NetworkManager: 请求参数 - \(bodyString)")
+                }
+            } catch {
+                print("NetworkManager: 参数编码错误 - \(error.localizedDescription)")
+                onError(error)
+            }
+        }
+        
+        // 创建自定义的URLSessionDataDelegate来处理SSE
+        class SSEDelegate: NSObject, URLSessionDataDelegate {
+            var onDataStream: ((Data, HTTPURLResponse) -> Void)?
+            var onError: ((Error) -> Void)?
+            var onCompletion: (() -> Void)?
+            var httpResponse: HTTPURLResponse?
+            var buffer = Data()
+            
+            func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+                print("SSEDelegate: 收到响应头")
+                if let httpResponse = response as? HTTPURLResponse {
+                    self.httpResponse = httpResponse
+                    print("SSEDelegate: 状态码: \(httpResponse.statusCode)")
+                }
+                completionHandler(.allow)
+            }
+            
+            func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+                print("SSEDelegate: 收到数据块: \(data.count) 字节")
+                
+                // 将新数据添加到缓冲区
+                buffer.append(data)
+                
+                // 检查是否有完整的SSE事件
+                if let string = String(data: data, encoding: .utf8) {
+                    print("SSEDelegate: 数据内容: \(string)")
+                    
+                    // 处理接收到的数据
+                    if let httpResponse = self.httpResponse {
+                        // 在主线程上调用回调，确保UI更新
+                        DispatchQueue.main.async {
+                            self.onDataStream?(data, httpResponse)
+                        }
+                    }
+                }
+            }
+            
+            func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+                if let error = error {
+                    print("SSEDelegate: 请求出错 - \(error.localizedDescription)")
+                    onError?(error)
+                } else {
+                    print("SSEDelegate: 请求完成")
+                    onCompletion?()
+                }
+                buffer.removeAll()
+            }
+        }
+        
+        // 创建并配置SSEDelegate
+        let sseDelegate = SSEDelegate()
+        sseDelegate.onDataStream = onDataStream
+        sseDelegate.onError = onError
+        sseDelegate.onCompletion = onCompletion
+        
+        // 创建URLSession并启动任务
+        let session = URLSession(configuration: .default, delegate: sseDelegate, delegateQueue: .main)
+        let task = session.dataTask(with: urlRequest)
+        task.resume()
+        
+        // 创建一个虚拟的DataRequest作为返回值
+        let dummyRequest = AF.request("https://example.com")
+        
+        // 保存delegate的引用，防止被提前释放
+        objc_setAssociatedObject(dummyRequest, "sseDelegate", sseDelegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        
+        return dummyRequest
+    }
+    
+    // MARK: - 取消请求
+    func cancelRequest(_ request: DataRequest) {
+        request.cancel()
     }
 }
