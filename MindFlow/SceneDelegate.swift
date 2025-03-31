@@ -13,39 +13,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
-        // 创建窗口并设置窗口场景
         window = UIWindow(windowScene: windowScene)
-        
-        // 创建TabBarController
-        let tabBarController = UITabBarController()
-        
-        // 创建三个视图控制器
-        let homeVC = HomeViewController()
-        let favoritesVC = FavoritesViewController()
-        let profileVC = ProfileViewController()
-        
-        // 设置标题和图标
-        // 在scene方法中修改标签栏标题
-        homeVC.title = "tab_home".localized
-        favoritesVC.title = "tab_favorites".localized
-        profileVC.title = "tab_profile".localized
-        
-        // 设置标签栏图标（使用系统图标）
-        homeVC.tabBarItem = UITabBarItem(title: "tab_home".localized, image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
-        favoritesVC.tabBarItem = UITabBarItem(title: "tab_favorites".localized, image: UIImage(systemName: "star"), selectedImage: UIImage(systemName: "star.fill"))
-        profileVC.tabBarItem = UITabBarItem(title: "tab_profile".localized, image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
-        
-        // 将视图控制器添加到TabBarController
-        tabBarController.viewControllers = [
-            UINavigationController(rootViewController: homeVC),
-            UINavigationController(rootViewController: favoritesVC),
-            UINavigationController(rootViewController: profileVC)
-        ]
-        
-        // 设置TabBarController为根视图控制器
-        window?.rootViewController = tabBarController
+        window?.rootViewController = MainTabBarController()
         window?.makeKeyAndVisible()
         
         // 执行匿名登录

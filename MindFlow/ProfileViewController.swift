@@ -17,12 +17,14 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupUI() {
+        // 创建个人资料标签
         let label = UILabel()
-        label.text = "我的个人信息"
+        label.text = "个人资料"
+        label.font = UIFont.systemFont(ofSize: 24, weight: .medium)
         label.textAlignment = .center
         view.addSubview(label)
         
-        // 使用SnapKit设置约束
+        
         label.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }

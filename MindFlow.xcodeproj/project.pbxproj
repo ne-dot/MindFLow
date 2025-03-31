@@ -143,7 +143,6 @@
 				8D0143CE2D959792007846F8 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				8D0143D92D95DFB5007846F8 /* XCRemoteSwiftPackageReference "Defaults" */,
 				8D0143FD2D969573007846F8 /* XCRemoteSwiftPackageReference "Down" */,
-				8D0144012D96A644007846F8 /* XCRemoteSwiftPackageReference "EFIconFont" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D0143472D95320A007846F8 /* Products */;
@@ -415,14 +414,6 @@
 			requirement = {
 				branch = master;
 				kind = branch;
-			};
-		};
-		8D0144012D96A644007846F8 /* XCRemoteSwiftPackageReference "EFIconFont" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/EFPrefix/EFIconFont";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
