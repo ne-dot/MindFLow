@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // 检查是否已有匿名ID
         if let existingAnonymousId = DefaultsManager.shared.getAnonymousId() {
             // 已有匿名ID，直接设置到NetworkManager
-            NetworkManager.shared.setAnonymousId(existingAnonymousId)
+            DefaultsManager.shared.setAnonymousId(existingAnonymousId)
             print("已使用现有匿名ID: \(existingAnonymousId)")
         } else {
             // 没有匿名ID，调用登录接口

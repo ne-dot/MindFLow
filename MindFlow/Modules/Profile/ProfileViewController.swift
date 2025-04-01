@@ -26,13 +26,13 @@ class ProfileViewController: UIViewController {
     
     private func checkLoginStatus() {
         // 检查用户是否已登录
-//        if !UserService.shared.isLoggedIn() {
+        if !DefaultsManager.shared.getIsLoggedIn() {
             // 用户未登录，显示登录页面
             presentLoginViewController()
-//        } else {
-//            // 用户已登录，显示个人资料
-//            loadUserProfile()
-//        }
+        } else {
+            // 用户已登录，显示个人资料
+            loadUserProfile()
+        }
     }
     
     private func presentLoginViewController() {

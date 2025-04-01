@@ -77,7 +77,7 @@ class PasswordInputView: UIView {
             make.trailing.equalToSuperview().offset(-16)
             make.centerY.equalToSuperview()
             make.width.equalTo(24)
-            make.height.equalTo(24)
+            make.height.equalTo(22)
         }
     }
     

@@ -28,16 +28,6 @@ class NetworkManager {
         self.currentLanguage = language
     }
     
-    // 设置token
-    func setToken(_ token: String) {
-        self.token = token
-    }
-    
-    // 清除token
-    func clearToken() {
-        self.token = nil
-    }
-    
     // 获取设备信息
     private func getDeviceInfo() -> [String: String] {
         let screenSize = UIScreen.main.bounds.size
@@ -63,16 +53,6 @@ class NetworkManager {
         return deviceInfo
     }
     
-    // 获取匿名用户ID
-    private func getAnonymousId() -> String? {
-        return DefaultsManager.shared.getAnonymousId()
-    }
-    
-    // 设置匿名用户ID
-    func setAnonymousId(_ id: String) {
-        DefaultsManager.shared.setAnonymousId(id)
-    }
-    
     // 默认请求头
     private var defaultHeaders: HTTPHeaders {
         var headers: HTTPHeaders = [
@@ -81,8 +61,7 @@ class NetworkManager {
             "Accept-Language": currentLanguage
         ]
         
-        // 如果有token，添加到Authorization头
-        if let token = token {
+        if let token = DefaultsManager.shared.getAccessToken() {
             headers["Authorization"] = "Bearer \(token)"
         }
         
@@ -92,7 +71,7 @@ class NetworkManager {
         }
         
         // 添加匿名用户ID
-        if let anonymousId = getAnonymousId() {
+        if let anonymousId = DefaultsManager.shared.getAnonymousId() {
             headers["X-Anonymous-ID"] = anonymousId
         }
         

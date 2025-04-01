@@ -362,7 +362,6 @@ class LoginViewController: UIViewController {
         return inputView
     }()
     
-    // 在signInTapped方法中获取密码
     @objc private func signInTapped() {
         guard let email = emailTextField.text, !email.isEmpty,
               let password = passwordInputView.text, !password.isEmpty else {
@@ -372,24 +371,29 @@ class LoginViewController: UIViewController {
             return
         }
         
-        // 实现登录功能
-        print("登录按钮被点击，邮箱: \(email)")
+        // 显示加载指示器
+        let loadingIndicator = UIActivityIndicatorView(style: .medium)
+        loadingIndicator.center = view.center
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
         
-        // 这里可以调用UserService进行登录
-        // 如果没有账号，可以使用匿名登录
-        UserService.shared.anonymousLogin { result in
-            switch result {
-            case .success(let data):
-                print("匿名登录成功，ID: \(data.anonymousId)")
-                DispatchQueue.main.async {
+        // 调用登录接口
+        UserService.shared.login(usernameOrEmail: email, password: password) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                // 移除加载指示器
+                loadingIndicator.removeFromSuperview()
+                
+                switch result {
+                case .success(let loginData):
+                    print("登录成功，Token: \(loginData.accessToken)")
                     // 登录成功后跳转到主界面
                     self.navigateToMainScreen()
-                }
-            case .failure(let error):
-                print("登录失败: \(error.localizedDescription)")
-                DispatchQueue.main.async {
+                case .failure(let error):
+                    print("登录失败: \(error.localizedDescription)")
                     self.showAlert(title: NSLocalizedString("login_failed", comment: "Login failed title"), 
-                                  message: error.localizedDescription)
+                                 message: error.localizedDescription)
                 }
             }
         }
@@ -409,8 +413,6 @@ class LoginViewController: UIViewController {
     
     private func navigateToMainScreen() {
         // 跳转到主界面
-        let mainTabBarController = MainTabBarController()
-        mainTabBarController.modalPresentationStyle = .fullScreen
-        present(mainTabBarController, animated: true)
+        dismiss(animated: true)
     }
 }
