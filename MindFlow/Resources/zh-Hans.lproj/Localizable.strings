@@ -59,3 +59,39 @@
 "ai_response_like" = "有用";
 "ai_response_dislike" = "无用";
 "ai_response_copied" = "已复制";
+
+
+/* Welcome back message */
+"welcome_back" = "欢迎回到 MindFlow";
+
+/* Continue with Google button */
+"continue_with_google" = "使用 Google 账号登录";
+
+/* Continue with Apple button */
+"continue_with_apple" = "使用 Apple 账号登录";
+
+/* Or divider */
+"or" = "或";
+
+/* Email placeholder */
+"enter_email" = "请输入邮箱";
+
+/* Password placeholder */
+"enter_password" = "请输入密码";
+
+/* Forgot password button */
+"forgot_password" = "忘记密码？";
+
+/* Sign in button */
+"sign_in" = "登录";
+
+/* Don't have an account text */
+"no_account" = "还没有账号？";
+
+/* Sign up button */
+"sign_up" = "注册";
+
+/* Alert titles and messages */
+"input_error" = "输入错误";
+"please_enter_email_password" = "请输入邮箱和密码";
+"login_failed" = "登录失败";

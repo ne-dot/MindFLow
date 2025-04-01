@@ -1,8 +1,10 @@
 {
   "light": {
     "background": "#FFFFFF",
+    "secondaryBackgroundColor": "#F0F0F0",
     "textBackground": "#F2F4F8",
     "text": "#0F172A",
+    "secondaryTextColor": "#1E293B",
     "subText": "#475569",
     "searchBackground": "#E2E8F0",
     "searchText": "#1E293B",
@@ -11,14 +13,17 @@
     "tabBarBackground": "#F8FAFC",
     "tabBarInactiveTintColor": "#94A3B8",
     "primary": "#2563EB",
+    "buttonTextColor": "#FFFFFF",
     "border": "#E5E7EB",
     "cardBackground": "#FFFFFF",
-    "cardShadow": "rgba(0, 0, 0, 0.1)"
+    "cardShadow": "#D1D5DB"
   },
   "dark": {
     "background": "#0A0F1A",
+    "secondaryBackgroundColor": "#161D2F",
     "textBackground": "#1E293B",
     "text": "#F1F5F9",
+    "secondaryTextColor": "#CBD5E1",
     "subText": "#94A3B8",
     "searchBackground": "#334155",
     "searchText": "#E2E8F0",
@@ -27,8 +32,9 @@
     "tabBarBackground": "#1E293B",
     "tabBarInactiveTintColor": "#64748B",
     "primary": "#3B82F6",
+    "buttonTextColor": "#FFFFFF",
     "border": "#334155",
     "cardBackground": "#1E293B",
-    "cardShadow": "rgba(0, 0, 0, 0.3)"
+    "cardShadow": "#111827"
   }
 }

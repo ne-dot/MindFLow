@@ -59,3 +59,39 @@
 "ai_response_like" = "Helpful";
 "ai_response_dislike" = "Not helpful";
 "ai_response_copied" = "Copied";
+
+
+/* Welcome back message */
+"welcome_back" = "Welcome back to MindFlow";
+
+/* Continue with Google button */
+"continue_with_google" = "Continue with Google";
+
+/* Continue with Apple button */
+"continue_with_apple" = "Continue with Apple";
+
+/* Or divider */
+"or" = "or";
+
+/* Email placeholder */
+"enter_email" = "Enter your email";
+
+/* Password placeholder */
+"enter_password" = "Enter your password";
+
+/* Forgot password button */
+"forgot_password" = "Forgot password?";
+
+/* Sign in button */
+"sign_in" = "Sign In";
+
+/* Don't have an account text */
+"no_account" = "Don't have an account?";
+
+/* Sign up button */
+"sign_up" = "Sign up";
+
+/* Alert titles and messages */
+"input_error" = "Input Error";
+"please_enter_email_password" = "Please enter email and password";
+"login_failed" = "Login Failed";

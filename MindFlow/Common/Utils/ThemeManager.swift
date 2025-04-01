@@ -105,6 +105,9 @@ class ThemeManager {
     var border: UIColor { getColor(for: "border") }
     var cardBackground: UIColor { getColor(for: "cardBackground") }
     var cardShadow: UIColor { getColor(for: "cardShadow") }
+    var secondaryBackgroundColor: UIColor { getColor(for: "secondaryBackgroundColor") }
+    var secondaryTextColor: UIColor { getColor(for: "secondaryTextColor") }
+    var buttonTextColor: UIColor { getColor(for: "buttonTextColor") }
     
     // 主题变化通知
     private let themeChangedNotification = Notification.Name("ThemeChangedNotification")
