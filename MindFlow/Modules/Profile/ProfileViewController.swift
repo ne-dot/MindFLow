@@ -564,13 +564,58 @@ class ProfileViewController: UIViewController {
     }
     
     private func logout() {
-        // 清除用户数据
-        DefaultsManager.shared.setIsLoggedIn(false)
-        DefaultsManager.shared.setAccessToken(nil)
-        DefaultsManager.shared.setRefreshToken(nil)
+        // 调用UserService的退出登录方法
+        UserService.shared.logout { [weak self] success in
+            guard let self = self else { return }
+            
+            if success {
+                // 重置UI
+                self.checkLoginStatus()
+                
+                // 显示退出成功提示
+                self.showToast(message: "已成功退出登录")
+                
+                // 弹出登录页面
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.presentLoginViewController()
+                }
+            } else {
+                // 显示退出失败提示
+                self.showToast(message: "退出登录失败，请稍后重试")
+            }
+        }
+    }
+    
+    // 添加一个简单的Toast提示方法
+    private func showToast(message: String) {
+        let toastLabel = UILabel()
+        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        toastLabel.textColor = UIColor.white
+        toastLabel.textAlignment = .center
+        toastLabel.font = UIFont.systemFont(ofSize: 14)
+        toastLabel.text = message
+        toastLabel.alpha = 0
+        toastLabel.layer.cornerRadius = 10
+        toastLabel.clipsToBounds = true
+        toastLabel.numberOfLines = 0
         
-        // 重置UI
-        checkLoginStatus()
+        view.addSubview(toastLabel)
+        toastLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-100)
+            make.width.lessThanOrEqualTo(300)
+            make.height.greaterThanOrEqualTo(40)
+        }
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseIn, animations: {
+            toastLabel.alpha = 1
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.3, delay: 1.5, options: .curveEaseOut, animations: {
+                toastLabel.alpha = 0
+            }, completion: { _ in
+                toastLabel.removeFromSuperview()
+            })
+        })
     }
 }
 

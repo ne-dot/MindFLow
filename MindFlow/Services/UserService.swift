@@ -79,4 +79,13 @@ class UserService {
             }
         }
     }
+    
+    // 退出登录
+    func logout(completion: @escaping (Bool) -> Void) {
+        // 清除用户数据
+        DefaultsManager.shared.clearAuthData()
+        
+        // 退出成功
+        completion(true)
+    }
 }
