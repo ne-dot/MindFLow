@@ -29,18 +29,18 @@ class TipView: UIView {
     
     // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = theme.cardBackground
+        backgroundColor = theme.secondaryBackgroundColor
         layer.cornerRadius = 12
-        layer.shadowColor = theme.cardShadow.cgColor
+        layer.shadowColor = theme.cardShadowColor.cgColor
         layer.shadowOpacity = 0.1
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 2
         
         // 设置图标
-        tipIcon.tintColor = theme.primary
+        tipIcon.tintColor = theme.primaryColor
         
         // 设置标签
-        tipLabel.textColor = theme.subText
+        tipLabel.textColor = theme.secondaryTextColor
         tipLabel.font = UIFont.systemFont(ofSize: 14)
         
         addSubview(tipIcon)

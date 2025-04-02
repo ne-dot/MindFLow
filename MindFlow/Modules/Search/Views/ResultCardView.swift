@@ -14,7 +14,7 @@ class ResultCardView: UITableViewCell {
     // MARK: - UI Components
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = theme.cardBackground
+        view.backgroundColor = theme.secondaryBackgroundColor
         view.layer.cornerRadius = 12
         view.clipsToBounds = true
         return view
@@ -31,7 +31,7 @@ class ResultCardView: UITableViewCell {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = theme.text
+        label.textColor = theme.textColor
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         label.numberOfLines = 2
         return label

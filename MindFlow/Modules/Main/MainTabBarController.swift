@@ -16,12 +16,34 @@ class MainTabBarController: UITabBarController {
     
     private func setupTabBar() {
         // 设置TabBar外观
-        if #available(iOS 15.0, *) {
-            let appearance = UITabBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            tabBar.standardAppearance = appearance
-            tabBar.scrollEdgeAppearance = appearance
-        }
+    
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        
+        // 设置TabBar背景色
+        appearance.backgroundColor = theme.secondaryBackgroundColor
+        
+        // 设置选中和非选中的文字颜色
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: theme.tabBarInactiveTintColor
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: theme.primaryColor
+        ]
+        
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
+        
+        // 设置图标颜色
+        appearance.stackedLayoutAppearance.normal.iconColor = theme.tabBarInactiveTintColor
+        appearance.stackedLayoutAppearance.selected.iconColor = theme.primaryColor
+        
+        // 应用外观设置
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+        
+        // 设置TabBar的tintColor（这会影响选中项的图标颜色）
+        tabBar.tintColor = theme.primaryColor
         
         // 创建各个Tab的ViewController
         let homeVC = HomeViewController()
@@ -31,25 +53,25 @@ class MainTabBarController: UITabBarController {
         
         // 设置Tab图标和标题 - 使用SF Symbols
         homeVC.tabBarItem = UITabBarItem(
-            title: "首页", 
+            title: "tab_home".localized,
             image: UIImage(systemName: "house"),
             selectedImage: UIImage(systemName: "house.fill")
         )
         
         favoriteVC.tabBarItem = UITabBarItem(
-            title: "收藏",
+            title: "tab_favorites".localized,
             image: UIImage(systemName: "star"),
             selectedImage: UIImage(systemName: "star.fill")
         )
         
         exploreVC.tabBarItem = UITabBarItem(
-            title: "探索", 
+            title: "tab_explore".localized, 
             image: UIImage(systemName: "safari"),
             selectedImage: UIImage(systemName: "safari.fill")
         )
         
         profileVC.tabBarItem = UITabBarItem(
-            title: "我的", 
+            title: "tab_profile".localized,
             image: UIImage(systemName: "person"),
             selectedImage: UIImage(systemName: "person.fill")
         )

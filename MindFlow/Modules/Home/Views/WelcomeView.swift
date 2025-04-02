@@ -39,13 +39,13 @@ class WelcomeView: UIView {
         // 标题样式
         titleLabel.text = "welcome_title".localized
         titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .medium)
-        titleLabel.textColor = theme.text
+        titleLabel.textColor = theme.textColor
         titleLabel.textAlignment = .center
         
         // 副标题样式
         subtitleLabel.text = "welcome_subtitle".localized
         subtitleLabel.font = UIFont.systemFont(ofSize: 16)
-        subtitleLabel.textColor = theme.subText
+        subtitleLabel.textColor = theme.secondaryTextColor
         subtitleLabel.textAlignment = .center
         subtitleLabel.numberOfLines = 0
         

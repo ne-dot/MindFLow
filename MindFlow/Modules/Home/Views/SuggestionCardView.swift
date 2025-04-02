@@ -31,9 +31,9 @@ class SuggestionCardView: UIView {
     
     // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = theme.cardBackground
+        backgroundColor = theme.secondaryBackgroundColor
         layer.cornerRadius = 12
-        layer.shadowColor = theme.cardShadow.cgColor
+        layer.shadowColor = theme.cardShadowColor.cgColor
         layer.shadowOpacity = 0.1
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 2
@@ -44,12 +44,12 @@ class SuggestionCardView: UIView {
         isUserInteractionEnabled = true
         
         // 设置标签
-        textLabel.textColor = theme.subText
+        textLabel.textColor = theme.secondaryTextColor
         textLabel.font = UIFont.systemFont(ofSize: 16)
         
         // 设置箭头图标
         arrowIcon.image = UIImage(systemName: "arrow.right")
-        arrowIcon.tintColor = theme.text
+        arrowIcon.tintColor = theme.textColor
         
         addSubview(textLabel)
         addSubview(arrowIcon)

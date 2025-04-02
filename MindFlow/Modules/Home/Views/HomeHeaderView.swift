@@ -34,8 +34,8 @@ class HomeHeaderView: UIView {
     
     // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = theme.background
-        layer.shadowColor = theme.border.cgColor
+        backgroundColor = theme.backgroundColor
+        layer.shadowColor = theme.borderColor.cgColor
         layer.shadowOpacity = 0.1
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 2
@@ -52,21 +52,21 @@ class HomeHeaderView: UIView {
     
     private func setupSearchContainer() {
         // 搜索容器样式
-        searchContainer.backgroundColor = theme.searchBackground
+        searchContainer.backgroundColor = theme.searchBackgroundColor
         searchContainer.layer.cornerRadius = 25
         
         // 搜索图标样式
         searchIcon.image = UIImage(systemName: "magnifyingglass")
-        searchIcon.tintColor = theme.iconColor
+        searchIcon.tintColor = theme.primaryColor
         
         // 搜索标签样式
         searchLabel.text = "search_placeholder".localized
-        searchLabel.textColor = theme.searchPlaceholder
+        searchLabel.textColor = theme.searchPlaceholderColor
         searchLabel.font = UIFont.systemFont(ofSize: 14)
         
         // 麦克风按钮样式
         micButton.setImage(UIImage(systemName: "mic"), for: .normal)
-        micButton.tintColor = theme.iconColor
+        micButton.tintColor = theme.primaryColor
     }
     
     private func setupConstraints() {
@@ -130,9 +130,9 @@ class HomeHeaderView: UIView {
         searchLabel.text = text
         // 如果设置了实际搜索文本，更改颜色为正常文本颜色
         if text != "search_placeholder".localized {
-            searchLabel.textColor = theme.text
+            searchLabel.textColor = theme.textColor
         } else {
-            searchLabel.textColor = theme.searchPlaceholder
+            searchLabel.textColor = theme.searchPlaceholderColor
         }
     }
 }

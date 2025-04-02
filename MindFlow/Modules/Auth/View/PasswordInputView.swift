@@ -33,7 +33,7 @@ class PasswordInputView: UIView {
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 14)
-        textField.textColor = theme.text
+        textField.textColor = theme.textColor
         textField.isSecureTextEntry = true
         textField.backgroundColor = .clear
         textField.borderStyle = .none

@@ -21,7 +21,7 @@ class HomeViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = theme.background
+        view.backgroundColor = theme.backgroundColor
         navigationController?.setNavigationBarHidden(true, animated: false)
         setupUI()
         setupActions()

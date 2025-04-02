@@ -48,7 +48,7 @@ class ThinkingView: UIView {
     private lazy var thinkingText: UILabel = {
         let label = UILabel()
         label.text = "Thinking"
-        label.textColor = theme.text
+        label.textColor = theme.textColor
         label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         return label
     }()
@@ -56,7 +56,7 @@ class ThinkingView: UIView {
     private lazy var thinkingSubtext: UILabel = {
         let label = UILabel()
         label.text = "Analyzing your query and gathering insights from multiple sources"
-        label.textColor = theme.subText
+        label.textColor = theme.secondaryTextColor
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -76,7 +76,7 @@ class ThinkingView: UIView {
     
     // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = theme.background
+        backgroundColor = theme.backgroundColor
         setupBreathingView()
         setupThinkingText()
         setupSubtext()

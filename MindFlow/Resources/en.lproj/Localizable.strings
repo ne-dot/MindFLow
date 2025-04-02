@@ -11,6 +11,7 @@
 "tab_home" = "Home";
 "tab_favorites" = "Favorites";
 "tab_profile" = "Profile";
+"tab_explore" = "Explore";
 
 // 用户相关
 "anonymous_login_success" = "Anonymous login successful";

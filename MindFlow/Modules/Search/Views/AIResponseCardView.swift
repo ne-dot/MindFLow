@@ -14,7 +14,7 @@ class AIResponseCardView: UITableViewCell {
     // MARK: - UI Components
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = theme.background
+        view.backgroundColor = theme.backgroundColor
         view.layer.cornerRadius = 12
         view.clipsToBounds = true
         return view
@@ -22,10 +22,9 @@ class AIResponseCardView: UITableViewCell {
     
     private lazy var avatarImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "ai_avatar") ?? UIImage(systemName: "brain")
+        imageView.image = UIImage(systemName: "brain")
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0)
-        imageView.backgroundColor = theme.textBackground
+        imageView.tintColor = theme.primaryColor
         imageView.layer.cornerRadius = 20
         imageView.clipsToBounds = true
         return imageView
@@ -34,7 +33,7 @@ class AIResponseCardView: UITableViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "MindFlow AI"
-        label.textColor = theme.text
+        label.textColor = theme.textColor
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         return label
     }()
@@ -42,7 +41,7 @@ class AIResponseCardView: UITableViewCell {
     private lazy var responseTextView: UITextView = {
         let textView = UITextView()
         textView.backgroundColor = .clear
-        textView.textColor = theme.subText
+        textView.textColor = theme.secondaryTextColor
         textView.font = UIFont.systemFont(ofSize: 15)
         textView.isEditable = false
         textView.isScrollEnabled = false
@@ -53,7 +52,7 @@ class AIResponseCardView: UITableViewCell {
     
     private lazy var actionButtonsView: UIView = {
         let view = UIView()
-        view.backgroundColor = theme.cardBackground
+        view.backgroundColor = theme.secondaryTextColor
         view.layer.cornerRadius = 8
         return view
     }()
@@ -129,13 +128,13 @@ class AIResponseCardView: UITableViewCell {
             // 设置默认字体和颜色
             let range = NSRange(location: 0, length: mutableAttrString.length)
             mutableAttrString.addAttribute(.font, value: UIFont.systemFont(ofSize: 15), range: range)
-            mutableAttrString.addAttribute(.foregroundColor, value: theme.subText, range: range)
+            mutableAttrString.addAttribute(.foregroundColor, value: theme.secondaryTextColor, range: range)
             
             // 设置标题样式
             mutableAttrString.enumerateAttribute(.font, in: range, options: []) { (value, range, _) in
                 if let font = value as? UIFont {
                     if font.pointSize > 15 { // 标题字体通常更大
-                        mutableAttrString.addAttribute(.foregroundColor, value: theme.text, range: range)
+                        mutableAttrString.addAttribute(.foregroundColor, value: theme.textColor, range: range)
                         mutableAttrString.addAttribute(.font, value: UIFont.systemFont(ofSize: font.pointSize, weight: .semibold), range: range)
                     }
                 }
@@ -163,7 +162,7 @@ class AIResponseCardView: UITableViewCell {
         contentView.backgroundColor = .clear
         
         // 容器视图
-        containerView.backgroundColor = theme.background
+        containerView.backgroundColor = theme.backgroundColor
         containerView.layer.cornerRadius = 12
         containerView.clipsToBounds = true
         
@@ -178,18 +177,18 @@ class AIResponseCardView: UITableViewCell {
         avatarImageView.image = UIImage(named: "ai_avatar") ?? UIImage(systemName: "brain")
         avatarImageView.contentMode = .scaleAspectFit
         avatarImageView.tintColor = UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0)
-        avatarImageView.backgroundColor = theme.textBackground
+        avatarImageView.backgroundColor = theme.secondaryTextColor
         avatarImageView.layer.cornerRadius = 20
         avatarImageView.clipsToBounds = true
         
         // 标题
         titleLabel.text = "MindFlow AI"
-        titleLabel.textColor = theme.text
+        titleLabel.textColor = theme.textColor
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         
         // 回复文本
         responseTextView.backgroundColor = .clear
-        responseTextView.textColor = theme.subText
+        responseTextView.textColor = theme.secondaryTextColor
         responseTextView.font = UIFont.systemFont(ofSize: 15)
         responseTextView.isEditable = false
         responseTextView.isScrollEnabled = false
@@ -197,7 +196,7 @@ class AIResponseCardView: UITableViewCell {
         responseTextView.textContainer.lineFragmentPadding = 0
         
         // 操作按钮容器
-        actionButtonsView.backgroundColor = theme.cardBackground
+        actionButtonsView.backgroundColor = theme.secondaryBackgroundColor
         actionButtonsView.layer.cornerRadius = 8
         
         // 复制按钮

@@ -89,25 +89,41 @@ class ThemeManager {
         let hexColor = isDarkMode ? darkColors[key] : lightColors[key]
         return UIColor(hex: hexColor ?? "#000000")
     }
-    
+
     // 获取当前主题的颜色
-    var background: UIColor { getColor(for: "background") }
-    var textBackground: UIColor { getColor(for: "textBackground") }
-    var text: UIColor { getColor(for: "text") }
-    var subText: UIColor { getColor(for: "subText") }
-    var searchBackground: UIColor { getColor(for: "searchBackground") }
-    var searchText: UIColor { getColor(for: "searchText") }
-    var searchPlaceholder: UIColor { getColor(for: "searchPlaceholder") }
-    var iconColor: UIColor { getColor(for: "iconColor") }
-    var tabBarBackground: UIColor { getColor(for: "tabBarBackground") }
-    var tabBarInactiveTintColor: UIColor { getColor(for: "tabBarInactiveTintColor") }
-    var primary: UIColor { getColor(for: "primary") }
-    var border: UIColor { getColor(for: "border") }
-    var cardBackground: UIColor { getColor(for: "cardBackground") }
-    var cardShadow: UIColor { getColor(for: "cardShadow") }
+    var primaryColor: UIColor { getColor(for: "primaryColor") }
+    var onPrimaryColor: UIColor { getColor(for: "onPrimaryColor") }
+    var secondaryColor: UIColor { getColor(for: "secondaryColor") }
+    var backgroundColor: UIColor { getColor(for: "backgroundColor") }
     var secondaryBackgroundColor: UIColor { getColor(for: "secondaryBackgroundColor") }
+    var onBackgroundColor: UIColor { getColor(for: "onBackgroundColor") }
+    var surfaceColor: UIColor { getColor(for: "surfaceColor")}
+    var onSurfaceColor: UIColor { getColor(for: "onSurfaceColor")}
     var secondaryTextColor: UIColor { getColor(for: "secondaryTextColor") }
     var buttonTextColor: UIColor { getColor(for: "buttonTextColor") }
+    var errorColor: UIColor {getColor(for: "errorColor")}
+    var onErrorColor: UIColor {getColor(for: "onErrorColor")}
+    var tabBarInactiveTintColor: UIColor {getColor(for: "tabBarInactiveTintColor")}
+    var searchBackgroundColor: UIColor {getColor(for: "searchBackgroundColor")}
+    var searchTextColor: UIColor {getColor(for: "searchTextColor")}
+    var searchPlaceholderColor: UIColor {getColor(for: "searchPlaceholderColor")}
+    var searchBorderColor: UIColor {getColor(for: "searchBorderColor")}
+    var borderColor: UIColor {getColor(for: "borderColor")}
+    var cardShadowColor: UIColor {getColor(for: "cardShadowColor")}
+    var buttonShadowColor: UIColor {getColor(for: "buttonShadowColor")}
+    var textColor: UIColor {getColor(for: "textColor")}
+     
+//    var textBackground: UIColor { getColor(for: "textBackground") }
+//    var text: UIColor { getColor(for: "text") }
+//    var subText: UIColor { getColor(for: "subText") }
+//    var searchBackground: UIColor { getColor(for: "searchBackground") }
+//    var searchText: UIColor { getColor(for: "searchText") }
+//    var searchPlaceholder: UIColor { getColor(for: "searchPlaceholder") }
+//    var iconColor: UIColor { getColor(for: "iconColor") }
+//    var tabBarBackground: UIColor { getColor(for: "tabBarBackground") }
+//    var border: UIColor { getColor(for: "border") }
+//    var cardBackground: UIColor { getColor(for: "cardBackground") }
+//    var cardShadow: UIColor { getColor(for: "cardShadow") }
     
     // 主题变化通知
     private let themeChangedNotification = Notification.Name("ThemeChangedNotification")

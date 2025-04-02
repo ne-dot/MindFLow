@@ -25,7 +25,7 @@ class LoginViewController: UIViewController {
         let button = UIButton(type: .system)
         let symbolConfig = UIImage.SymbolConfiguration(weight: .regular)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: symbolConfig), for: .normal)
-        button.tintColor = theme.text
+        button.tintColor = theme.textColor
         return button
     }()
     
@@ -33,7 +33,7 @@ class LoginViewController: UIViewController {
         let label = UILabel()
         label.text = "MindFlow"
         label.font = UIFont(name: "Pacifico-Regular", size: 32) ?? UIFont.systemFont(ofSize: 32, weight: .bold)
-        label.textColor = theme.primary
+        label.textColor = theme.primaryColor
         label.textAlignment = .center
         return label
     }()
@@ -49,9 +49,9 @@ class LoginViewController: UIViewController {
     
     private lazy var googleButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = theme.background
+        button.backgroundColor = theme.backgroundColor
         button.layer.borderWidth = 1
-        button.layer.borderColor = theme.border.cgColor
+        button.layer.borderColor = theme.borderColor.cgColor
         button.layer.cornerRadius = 4
         
         // 创建自定义内容视图
@@ -68,7 +68,7 @@ class LoginViewController: UIViewController {
         // 创建文字标签
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("continue_with_google", comment: "Continue with Google button")
-        titleLabel.textColor = theme.text
+        titleLabel.textColor = theme.textColor
         titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         
         // 添加到内容视图
@@ -85,9 +85,9 @@ class LoginViewController: UIViewController {
     
     private lazy var appleButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = theme.background
+        button.backgroundColor = theme.backgroundColor
         button.layer.borderWidth = 1
-        button.layer.borderColor = theme.border.cgColor
+        button.layer.borderColor = theme.borderColor.cgColor
         button.layer.cornerRadius = 4
         
         // 创建自定义内容视图
@@ -104,7 +104,7 @@ class LoginViewController: UIViewController {
         // 创建文字标签
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("continue_with_apple", comment: "Continue with Apple button")
-        titleLabel.textColor = theme.text
+        titleLabel.textColor = theme.textColor
         titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         
         // 添加到内容视图
@@ -153,7 +153,7 @@ class LoginViewController: UIViewController {
         textField.placeholder = NSLocalizedString("enter_email", comment: "Email placeholder")
         textField.font = UIFont.systemFont(ofSize: 14)
         textField.backgroundColor = theme.secondaryBackgroundColor
-        textField.textColor = theme.text
+        textField.textColor = theme.textColor
         textField.layer.cornerRadius = 4
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         textField.leftViewMode = .always
@@ -167,7 +167,7 @@ class LoginViewController: UIViewController {
     private lazy var forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle(NSLocalizedString("forgot_password", comment: "Forgot password button"), for: .normal)
-        button.setTitleColor(theme.primary, for: .normal)
+        button.setTitleColor(theme.primaryColor, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         button.contentHorizontalAlignment = .right
         return button
@@ -178,7 +178,7 @@ class LoginViewController: UIViewController {
         button.setTitle(NSLocalizedString("sign_in", comment: "Sign in button"), for: .normal)
         button.setTitleColor(theme.buttonTextColor, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        button.backgroundColor = theme.primary
+        button.backgroundColor = theme.primaryColor
         button.layer.cornerRadius = 4
         return button
     }()
@@ -195,7 +195,7 @@ class LoginViewController: UIViewController {
     private lazy var signUpButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle(NSLocalizedString("sign_up", comment: "Sign up button"), for: .normal)
-        button.setTitleColor(theme.primary, for: .normal)
+        button.setTitleColor(theme.primaryColor, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         return button
     }()
@@ -217,7 +217,7 @@ class LoginViewController: UIViewController {
     
     // MARK: - UI设置
     private func setupUI() {
-        view.backgroundColor = theme.background
+        view.backgroundColor = theme.backgroundColor
         
         // 添加关闭按钮
         view.addSubview(closeButton)

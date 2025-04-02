@@ -54,7 +54,7 @@ class SearchResultTableView: UIView {
     
     // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = theme.background
+        backgroundColor = theme.backgroundColor
         
         addSubview(tableView)
         

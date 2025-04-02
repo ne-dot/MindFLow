@@ -29,17 +29,17 @@ class SearchViewController: UIViewController {
     private lazy var backButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "arrow.backward"), for: .normal)
-        button.tintColor = theme.text
+        button.tintColor = theme.textColor
         return button
     }()
     
     private lazy var searchInputContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = theme.background
+        view.backgroundColor = theme.backgroundColor
         
         // 添加底部边框线
         let borderLine = UIView()
-        borderLine.backgroundColor = theme.border
+        borderLine.backgroundColor = theme.borderColor
         view.addSubview(borderLine)
         borderLine.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
@@ -52,7 +52,7 @@ class SearchViewController: UIViewController {
     // 将UITextView替换为PlaceholderTextView
     private lazy var searchTextField: PlaceholderTextView = {
         let textView = PlaceholderTextView()
-        textView.textColor = theme.text
+        textView.textColor = theme.textColor
         textView.font = UIFont.systemFont(ofSize: 16)
         textView.backgroundColor = .clear
         textView.isScrollEnabled = true
@@ -62,7 +62,7 @@ class SearchViewController: UIViewController {
         textView.textContainerInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 24) // 右侧留出空间给清除按钮
         // 设置占位文本
         textView.placeholder = "Search anything..."
-        textView.placeholderColor = theme.searchPlaceholder
+        textView.placeholderColor = theme.searchPlaceholderColor
         textView.delegate = self
         return textView
     }()
@@ -79,7 +79,7 @@ class SearchViewController: UIViewController {
         let label = UILabel()
         label.text = "Recent Searches"
         label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        label.textColor = theme.text
+        label.textColor = theme.textColor
         return label
     }()
     
@@ -120,7 +120,7 @@ class SearchViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = theme.background
+        view.backgroundColor = theme.backgroundColor
         setupUI()
         setupActions()
     }
@@ -226,14 +226,14 @@ class SearchViewController: UIViewController {
     private func setupSearchHeader() {
         // 返回按钮
         backButton.setImage(UIImage(systemName: "arrow.backward"), for: .normal)
-        backButton.tintColor = theme.text
+        backButton.tintColor = theme.textColor
         
         // 搜索输入容器
-        searchInputContainer.backgroundColor = theme.background
+        searchInputContainer.backgroundColor = theme.backgroundColor
         
         // 添加底部边框线
         let borderLine = UIView()
-        borderLine.backgroundColor = theme.border
+        borderLine.backgroundColor = theme.borderColor
         searchInputContainer.addSubview(borderLine)
         borderLine.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
@@ -259,7 +259,7 @@ class SearchViewController: UIViewController {
         // 设置标题
         recentTitle.text = "Recent Searches"
         recentTitle.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        recentTitle.textColor = theme.text
+        recentTitle.textColor = theme.textColor
         
         // 设置堆栈视图
         recentStackView.axis = .vertical
@@ -279,11 +279,11 @@ class SearchViewController: UIViewController {
         
         let historyIcon = UIImageView()
         historyIcon.image = UIImage(systemName: "clock")
-        historyIcon.tintColor = theme.subText
+        historyIcon.tintColor = theme.secondaryTextColor
         
         let textLabel = UILabel()
         textLabel.text = text
-        textLabel.textColor = theme.text
+        textLabel.textColor = theme.textColor
         textLabel.font = UIFont.systemFont(ofSize: 14)
         
         itemView.addSubview(historyIcon)
@@ -352,7 +352,7 @@ class SearchViewController: UIViewController {
             if view.tag < suggestions.count {
                 let suggestion = suggestions[view.tag]
                 searchTextField.text = suggestion
-                searchTextField.textColor = theme.text  // 确保文本颜色正确
+                searchTextField.textColor = theme.textColor  // 确保文本颜色正确
                 presenter.performStreamSearch(query: suggestion)
             }
         }

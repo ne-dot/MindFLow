@@ -69,7 +69,7 @@ class WebViewController: UIViewController {
     
     // MARK: - UI Setup
     private func setupUI() {
-        view.backgroundColor = theme.background
+        view.backgroundColor = theme.backgroundColor
         
         // 添加WebView
         view.addSubview(webView)
