@@ -33,19 +33,31 @@ enum StreamEventType: String, Codable {
     case chunk = "chunk"
     case end = "end"
     case error = "error"
+    case googleResults = "google_results" // 添加Google结果事件类型
+}
+
+// 修改流式事件数据模型，添加Google结果字段
+struct StreamEventData: Codable {
+    let content: String?
+    let query: String?
+    let error: String?
+    let results: [GoogleImageResult]? // 添加Google图片结果数组
+}
+
+// 添加Google图片结果模型
+struct GoogleImageResult: Codable {
+    let title: String
+    let link: String
+    let thumbnailLink: String?
+    let contextLink: String
+    let snippet: String
+    let source: String
 }
 
 // 添加流式事件模型
 struct StreamEvent: Codable {
     let event: StreamEventType
     let data: StreamEventData
-}
-
-// 添加流式事件数据模型
-struct StreamEventData: Codable {
-    let content: String?
-    let query: String?
-    let error: String?
 }
 
 // 添加流式搜索回调类型
@@ -92,7 +104,6 @@ class SearchService {
             onDataStream: { data, response in
                 // 将新接收的数据添加到缓冲区
                 if let string = String(data: data, encoding: .utf8) {
-                    print("收到数据块: \(string)")
                     buffer += string
                     
                     // 处理接收到的数据块
@@ -102,14 +113,12 @@ class SearchService {
                         let nsString = buffer as NSString
                         let matches = regex.matches(in: buffer, options: [], range: NSRange(location: 0, length: nsString.length))
                         
-                        print("找到 \(matches.count) 个匹配项")
                         
                         // 处理找到的每个事件
                         for match in matches {
                             let eventString = nsString.substring(with: match.range)
                                 .trimmingCharacters(in: .whitespacesAndNewlines)
                             
-                            print("处理事件: \(eventString)")
                             
                             if eventString.hasPrefix("data: ") {
                                 let jsonString = eventString.dropFirst(6) // 移除 "data: " 前缀
@@ -123,7 +132,6 @@ class SearchService {
                             let endIndex = lastMatch.range.location + lastMatch.range.length
                             let oldBuffer = buffer
                             buffer = nsString.substring(from: endIndex)
-                            print("缓冲区更新: \n旧: \(oldBuffer)\n新: \(buffer)")
                         }
                     }
                 }
@@ -144,11 +152,35 @@ class SearchService {
         do {
             if let data = eventString.data(using: .utf8) {
                 let event = try JSONDecoder().decode(StreamEvent.self, from: data)
-                print("成功解析事件: \(event.event.rawValue), 内容: \(event.data.content ?? "无内容")")
+                print("成功解析事件: \(event.event.rawValue)")
+                
+                // 如果是Google结果事件，处理图片结果
+                if event.event == .googleResults && event.data.results != nil {
+                    print("接收到Google图片搜索结果: \(event.data.results?.count ?? 0)个")
+                    // 这里可以添加额外的处理逻辑
+                }
+                
                 onEvent(event)
             }
         } catch {
             print("解析事件错误: \(error), 原始字符串: \(eventString)")
+        }
+    }
+    
+    // 添加处理Google图片结果的方法
+    func processGoogleImageResults(results: [GoogleImageResult]) -> [SearchResultItem] {
+        return results.enumerated().map { index, result in
+            return SearchResultItem(
+                id: "google-image-\(index)",
+                title: result.title,
+                description: result.snippet,
+                contextLink: result.contextLink,
+                source: result.source,
+                imageUrl: result.thumbnailLink ?? result.link, // 优先使用缩略图
+                isFavorited: false,
+                isBookmarked: false,
+                type: .normalResult
+            )
         }
     }
     

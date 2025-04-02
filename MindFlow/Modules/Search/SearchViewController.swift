@@ -240,16 +240,10 @@ class SearchViewController: UIViewController {
             make.height.equalTo(0.5)
         }
         
-        // 搜索文本框 - 移除不适用于UITextView的属性
-        // 不需要设置placeholder，因为我们已经在初始化时设置了text和textColor
-        // 不需要设置borderStyle，因为UITextView没有这个属性
+
         searchTextField.returnKeyType = .search
         searchTextField.autocorrectionType = .no
-        
-        // 清除按钮
-//        clearButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-//        clearButton.tintColor = theme.iconColor
-//        clearButton.isHidden = true
+
     }
     
     private func setupRecentSearches() {
@@ -445,7 +439,7 @@ class SearchViewController: UIViewController {
 extension SearchViewController: SearchViewProtocol {
     // 实现流式搜索相关方法
     func clearSearchContent() {
-        searchResultView.clearContent()
+//        searchResultView.clearContent()
     }
     
     func setSearchQueryTitle(_ query: String) {

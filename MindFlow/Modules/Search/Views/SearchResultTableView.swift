@@ -8,10 +8,6 @@
 import UIKit
 import SnapKit
 
-// 搜索结果数据模型
-
-
-
 // 在SearchResultTableView类中添加对AI回复卡片的支持
 class SearchResultTableView: UIView {
     
@@ -75,25 +71,53 @@ class SearchResultTableView: UIView {
     
     // 添加更新结果的方法
     func updateResults(_ results: [SearchResultItem]) {
-        self.searchResults = results
+        // 先清空当前内容
+        currentContent = ""
+        
+        // 检查是否已经有AI响应类型的cell
+        let hasAIResponse = results.contains { $0.id == "ai-response-stream" }
+        
+        if !hasAIResponse {
+            // 如果没有AI响应类型的cell，创建一个空的并放在第一位
+            let aiResponseItem = SearchResultItem(
+                id: "ai-response-stream",
+                title: "MindFlow AI",
+                description: "",
+                contextLink: "",
+                source: "",
+                imageUrl: nil,
+                isFavorited: false,
+                isBookmarked: false,
+                type: .aiResponse
+            )
+            
+            // 创建新的结果数组，将AI响应放在第一位
+            var newResults = results
+            newResults.insert(aiResponseItem, at: 0)
+            self.searchResults = newResults
+            self.aiResponseItem = aiResponseItem
+        } else {
+            // 如果已经有AI响应类型的cell，直接使用传入的结果
+            self.searchResults = results
+            self.aiResponseItem = results.first { $0.id == "ai-response-stream" }
+        }
+        
         tableView.reloadData()
     }
     
-    // 添加流式数据相关方法
-    
-    // 清除当前内容
-    func clearContent() {
-        currentContent = ""
+    // 添加内容块
+    func appendContent(_ content: String) {
+        currentContent += content
         
-        // 创建或更新AI响应项
+        // 检查是否存在AI响应类型的cell
         if let index = searchResults.firstIndex(where: { $0.id == "ai-response-stream" }) {
+            // 已存在AI响应，更新它
             let currentItem = searchResults[index]
             
-            // 创建一个新的AI响应项，但description为空
             let updatedItem = SearchResultItem(
                 id: "ai-response-stream",
                 title: currentItem.title,
-                description: "",
+                description: currentContent,
                 contextLink: currentItem.contextLink,
                 source: currentItem.source,
                 imageUrl: currentItem.imageUrl,
@@ -106,27 +130,19 @@ class SearchResultTableView: UIView {
             searchResults[index] = updatedItem
             aiResponseItem = updatedItem
             
-            tableView.reloadData()
-        } else {
-            // 如果不存在，创建一个新的AI响应项
-            let newItem = SearchResultItem(
-                id: "ai-response-stream",
-                title: "MindFlow AI",
-                description: "",
-                contextLink: "",
-                source: "",
-                imageUrl: nil,
-                isFavorited: false,
-                isBookmarked: false,
-                type: .aiResponse
-            )
-            
-            // 添加到结果列表的开头
-            searchResults.insert(newItem, at: 0)
-            aiResponseItem = newItem
-            
-            tableView.reloadData()
+            // 直接更新cell内容，而不是重新加载整行
+            let indexPath = IndexPath(row: index, section: 0)
+            if let cell = tableView.cellForRow(at: indexPath) as? AIResponseCardView {
+                cell.renderMarkdown(currentContent)
+                
+                // 通知tableView更新布局，但不重新加载单元格
+                UIView.performWithoutAnimation {
+                    tableView.beginUpdates()
+                    tableView.endUpdates()
+                }
+            }
         }
+        // 移除了else分支，因为updateResults已经确保了AI响应cell的存在
     }
     
     // 设置查询标题
@@ -153,39 +169,6 @@ class SearchResultTableView: UIView {
             // 更新表格中的第一行
             let indexPath = IndexPath(row: index, section: 0)
             tableView.reloadRows(at: [indexPath], with: .none)
-        }
-    }
-    
-    // 添加内容块
-    func appendContent(_ content: String) {
-        currentContent += content
-        
-        // 由于description是let常量，我们需要创建一个新的AI响应项
-        if let index = searchResults.firstIndex(where: { $0.id == "ai-response-stream" }) {
-            let currentItem = searchResults[index]
-            
-            let updatedItem = SearchResultItem(
-                id: "ai-response-stream",
-                title: currentItem.title,
-                description: currentContent,
-                contextLink: currentItem.contextLink,
-                source: currentItem.source,
-                imageUrl: currentItem.imageUrl,
-                isFavorited: currentItem.isFavorited,
-                isBookmarked: currentItem.isBookmarked,
-                type: .aiResponse
-            )
-            
-            // 替换现有项
-            searchResults[index] = updatedItem
-            aiResponseItem = updatedItem
-            
-            // 更新表格中的相应行
-            let indexPath = IndexPath(row: index, section: 0)
-            tableView.reloadRows(at: [indexPath], with: .none)
-            
-            // 滚动到顶部以确保用户可以看到更新的内容
-            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
         }
     }
     

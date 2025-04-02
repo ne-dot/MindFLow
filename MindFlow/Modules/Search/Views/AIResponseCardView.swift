@@ -119,7 +119,7 @@ class AIResponseCardView: UITableViewCell {
     }
     
     // 添加Markdown渲染方法
-    private func renderMarkdown(_ markdown: String) {
+    func renderMarkdown(_ markdown: String) {
         let down = Down(markdownString: markdown)
         if let attributedString = try? down.toAttributedString([.hardBreaks, .unsafe]) {
             // 应用基本样式
@@ -153,6 +153,8 @@ class AIResponseCardView: UITableViewCell {
             responseTextView.text = markdown
             print("Markdown渲染失败")
         }
+        
+        setNeedsLayout()
     }
     
     // MARK: - UI Setup
@@ -394,4 +396,5 @@ class AIResponseCardView: UITableViewCell {
         
         onDislike?(isDisliked)
     }
+    
 }

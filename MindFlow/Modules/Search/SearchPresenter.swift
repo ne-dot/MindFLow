@@ -64,6 +64,9 @@ class SearchPresenter {
         view?.clearSearchContent()
         view?.setSearchQueryTitle(query)
         
+        // 清除之前的搜索结果
+        view?.updateSearchResults(with: [])
+        
         // 调用搜索服务的流式搜索方法
         streamRequest = searchService.streamSearch(
             query: query,
@@ -73,6 +76,7 @@ class SearchPresenter {
             onError: { [weak self] error in
                 DispatchQueue.main.async {
                     self?.view?.showError(message: error.localizedDescription)
+                    self?.view?.showResultsView() // 即使出错也显示结果页面
                 }
             },
             onCompletion: { [weak self] in
@@ -80,7 +84,10 @@ class SearchPresenter {
                     // 流式请求完成后的处理
                     self?.streamRequest = nil
                     
-                    // 可以在这里添加完成后的逻辑，比如更新来源
+                    // 确保显示结果页面
+                    self?.view?.showResultsView()
+                    
+                    // 更新来源
                     let sources = self?.extractSourcesFromContent() ?? []
                     self?.view?.updateSearchSources(sources: sources)
                 }
@@ -110,15 +117,38 @@ class SearchPresenter {
                 }
                 
             case .end:
-                break
                 // 结束事件处理
-//                self?.view?.showResultsView()
+                self?.view?.showResultsView()
                 
             case .error:
                 if let errorMessage = event.data.error {
                     self?.view?.showError(message: errorMessage)
                 }
+                
+            case .googleResults:
+                // 处理Google搜索结果
+                if let results = event.data.results {
+                    let searchResults = self?.processGoogleResults(results) ?? []
+                    self?.view?.updateSearchResults(with: searchResults)
+                }
             }
+        }
+    }
+    
+    // 处理Google搜索结果
+    private func processGoogleResults(_ results: [GoogleImageResult]) -> [SearchResultItem] {
+        return results.enumerated().map { index, result in
+            return SearchResultItem(
+                id: "google-image-\(index)",
+                title: result.title,
+                description: result.snippet,
+                contextLink: result.contextLink,
+                source: result.source,
+                imageUrl: result.thumbnailLink ?? result.link,
+                isFavorited: false,
+                isBookmarked: false,
+                type: .normalResult
+            )
         }
     }
     
