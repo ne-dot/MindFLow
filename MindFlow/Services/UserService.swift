@@ -88,4 +88,39 @@ class UserService {
         // 退出成功
         completion(true)
     }
+    
+    // 获取当前用户信息
+    func getCurrentUser(completion: @escaping (Result<User, Error>) -> Void) {
+        let url = AppConfig.shared.apiURL(AppConfig.APIPath.User.profile)
+        
+        NetworkManager.shared.get(url) { (result: Result<APIResponse<User>, Error>) in
+            switch result {
+            case .success(let response):
+                if let user = response.data {
+                    // 保存用户信息到本地
+                    self.saveUserInfo(user)
+                    completion(.success(user))
+                } else {
+                    completion(.failure(APIError.serverError(message: "未能获取用户信息", code: 0)))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    // 保存用户信息到本地
+    private func saveUserInfo(_ user: User) {
+        DefaultsManager.shared.setUserInfo(user)
+    }
+    
+    // 从本地获取用户信息
+    func getLocalUserInfo() -> User? {
+        return DefaultsManager.shared.getUserInfo()
+    }
+    
+    // 清除用户信息
+    func clearUserInfo() {
+        DefaultsManager.shared.clearUserInfo()
+    }
 }

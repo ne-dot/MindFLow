@@ -112,6 +112,11 @@ class ThemeManager {
     var cardShadowColor: UIColor {getColor(for: "cardShadowColor")}
     var buttonShadowColor: UIColor {getColor(for: "buttonShadowColor")}
     var textColor: UIColor {getColor(for: "textColor")}
+    var toastSuccessColor: UIColor {getColor(for: "toastSuccessColor")}
+    var toastErrorColor: UIColor {getColor(for: "toastErrorColor")}
+    var toastInfoColor: UIColor {getColor(for: "toastInfoColor")}
+    var toastTextColor: UIColor {getColor(for: "toastTextColor")}
+    
      
 //    var textBackground: UIColor { getColor(for: "textBackground") }
 //    var text: UIColor { getColor(for: "text") }

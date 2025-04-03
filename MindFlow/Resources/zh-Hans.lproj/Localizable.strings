@@ -96,3 +96,79 @@
 "input_error" = "输入错误";
 "please_enter_email_password" = "请输入邮箱和密码";
 "login_failed" = "登录失败";
+
+
+/* Profile tab title */
+"profile" = "个人";
+
+/* Edit profile quick action */
+"edit_profile" = "编辑资料";
+
+/* Security settings quick action */
+"security_settings" = "安全设置";
+
+/* Notifications quick action */
+"notifications" = "通知";
+
+/* Logout button */
+"logout" = "退出登录";
+
+/* Account settings section title */
+"account_settings" = "账户设置";
+
+/* Personal info setting */
+"personal_info" = "个人信息";
+
+/* Password and security setting */
+"password_security" = "密码与安全";
+
+/* Linked accounts setting */
+"linked_accounts" = "关联账户";
+
+/* Subscription and payment section title */
+"subscription_payment" = "订阅与支付";
+
+/* Subscription plan setting */
+"subscription_plan" = "订阅计划";
+
+/* Premium subscription */
+"premium" = "高级版";
+
+/* Payment methods setting */
+"payment_methods" = "支付方式";
+
+/* Billing history setting */
+"billing_history" = "账单记录";
+
+/* Preferences section title */
+"preferences" = "偏好设置";
+
+/* Language setting */
+"language" = "语言";
+
+/* Chinese Simplified language */
+"chinese_simplified" = "简体中文";
+
+/* Dark mode setting */
+"dark_mode" = "深色模式";
+
+/* Confirm logout title */
+"confirm_logout" = "确认退出";
+
+/* Confirm logout message */
+"confirm_logout_message" = "您确定要退出登录吗？";
+
+/* Cancel button */
+"cancel" = "取消";
+
+/* Logout success message */
+"logout_success" = "已成功退出登录";
+
+/* Logout failed message */
+"logout_failed" = "退出登录失败，请稍后重试";
+
+/* Not logged in name */
+"not_logged_in" = "未登录";
+
+/* Tap to login */
+"tap_to_login" = "点击登录";

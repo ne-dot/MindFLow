@@ -20,7 +20,11 @@
     "cardShadowColor": "rgba(0, 0, 0, 0.08)",
     "buttonShadowColor": "rgba(0, 0, 0, 0.16)",
     "textColor": "#1E1E1E",
-    "secondaryTextColor": "#6B7280"
+    "secondaryTextColor": "#6B7280",
+    "toastSuccessColor": "#DCFCE7",
+    "toastErrorColor": "#FEE2E2",
+    "toastInfoColor": "#DBEAFE",
+    "toastTextColor": "#065F46"
   },
   "dark": {
     "primaryColor": "#9C8CE2",
@@ -43,6 +47,10 @@
     "cardShadowColor": "rgba(67, 56, 100, 0.4)",
     "buttonShadowColor": "rgba(67, 56, 100, 0.6)",
     "textColor": "#F1F5F9",
-    "secondaryTextColor": "#A1A1AA"
+    "secondaryTextColor": "#A1A1AA",
+    "toastSuccessColor": "#166534",
+    "toastErrorColor": "#7F1D1D",
+    "toastInfoColor": "#1E40AF",
+    "toastTextColor": "#F1F5F9"
   }
 }

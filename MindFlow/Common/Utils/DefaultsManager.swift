@@ -104,4 +104,23 @@ class DefaultsManager {
         set(0, for: .tokenExpiresIn)
         set(false, for: .isLoggedIn)
     }
+    
+    // 用户信息相关
+    func setUserInfo(_ user: User) {
+        if let encoded = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(encoded, forKey: "userInfo")
+        }
+    }
+    
+    func getUserInfo() -> User? {
+        if let userData = UserDefaults.standard.data(forKey: "userInfo"),
+           let user = try? JSONDecoder().decode(User.self, from: userData) {
+            return user
+        }
+        return nil
+    }
+    
+    func clearUserInfo() {
+        UserDefaults.standard.removeObject(forKey: "userInfo")
+    }
 }

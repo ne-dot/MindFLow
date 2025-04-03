@@ -1,26 +1,45 @@
+//
+//  User.swift
+//  MindFlow
+//
+//  Created by ne on 2025/3/28.
+//
+
 import Foundation
 
 struct User: Codable {
     let userId: String
     let username: String
-    let email: String?
-    let passwordHash: String
-    let createdAt: Int
-    let updatedAt: Int
-    let lastLogin: Int
-    let isActive: Bool
+    let email: String
+    let createdAt: TimeInterval
+    let lastLogin: TimeInterval
     let isAnonymous: Bool
     
     enum CodingKeys: String, CodingKey {
         case userId = "user_id"
         case username
         case email
-        case passwordHash = "password_hash"
         case createdAt = "created_at"
-        case updatedAt = "updated_at"
         case lastLogin = "last_login"
-        case isActive = "is_active"
         case isAnonymous = "is_anonymous"
+    }
+    
+    // 格式化的创建时间
+    var formattedCreatedAt: String {
+        let date = Date(timeIntervalSince1970: createdAt)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+    
+    // 格式化的最后登录时间
+    var formattedLastLogin: String {
+        let date = Date(timeIntervalSince1970: lastLogin)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }
 

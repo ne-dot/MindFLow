@@ -372,28 +372,42 @@ class LoginViewController: UIViewController {
         }
         
         // 显示加载指示器
-        let loadingIndicator = UIActivityIndicatorView(style: .medium)
-        loadingIndicator.center = view.center
-        loadingIndicator.startAnimating()
-        view.addSubview(loadingIndicator)
+        LoadingView.show(in: view, message: "正在登录...")
         
         // 调用登录接口
         UserService.shared.login(usernameOrEmail: email, password: password) { [weak self] result in
             guard let self = self else { return }
             
+            switch result {
+            case .success(_):
+                // 登录成功后获取用户信息
+                self.fetchUserInfo()
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    // 移除加载指示器
+                    LoadingView.hide()
+                    ErrorHandler.handleError(error)
+                }
+            }
+        }
+    }
+    
+    // 获取用户信息
+    private func fetchUserInfo() {
+        UserService.shared.getCurrentUser { [weak self] result in
+            guard let self = self else { return }
+            
             DispatchQueue.main.async {
                 // 移除加载指示器
-                loadingIndicator.removeFromSuperview()
+                LoadingView.hide()
                 
                 switch result {
-                case .success(let loginData):
-                    print("登录成功，Token: \(loginData.accessToken)")
+                case .success(let user):
+                    ToastView.showSuccess(message: "欢迎回来，\(user.username)")
                     // 登录成功后跳转到主界面
                     self.navigateToMainScreen()
                 case .failure(let error):
-                    print("登录失败: \(error.localizedDescription)")
-                    self.showAlert(title: NSLocalizedString("login_failed", comment: "Login failed title"), 
-                                 message: error.localizedDescription)
+                    ErrorHandler.handleError(error)
                 }
             }
         }

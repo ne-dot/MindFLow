@@ -40,7 +40,7 @@ struct AppConfig {
             static let anonymousLogin = "/api/users/anonymous-login"
             static let login = "/api/users/login"
             static let register = "/api/users/register"
-            static let profile = "/api/users/profile"
+            static let profile = "/api/users/me"
         }
         
         // 内容相关

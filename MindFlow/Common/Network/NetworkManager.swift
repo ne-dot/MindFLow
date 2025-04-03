@@ -91,12 +91,42 @@ class NetworkManager {
         
         AF.request(url, method: method, parameters: parameters, encoding: encoding, headers: requestHeaders)
             .validate()
-            .responseDecodable(of: T.self) { response in
+            .responseData { response in
                 switch response.result {
-                case .success(let value):
-                    completion(.success(value))
+                case .success(let data):
+                    // 尝试解析为APIResponse格式
+                    do {
+                        let decoder = JSONDecoder()
+                        let apiResponse = try decoder.decode(APIResponse<T>.self, from: data)
+                        
+                        // 检查业务逻辑是否成功
+                        if apiResponse.success {
+                            // 业务逻辑成功，返回数据
+                            if let responseData = apiResponse.data {
+                                completion(.success(responseData))
+                            } else {
+                                // 如果没有data字段，尝试将整个响应解析为T
+                                let value = try decoder.decode(T.self, from: data)
+                                completion(.success(value))
+                            }
+                        } else {
+                            // 业务逻辑失败，返回错误
+                            let errorMessage = apiResponse.message ?? "未知错误"
+                            let errorCode = apiResponse.errorCode ?? 0
+                            completion(.failure(APIError.serverError(message: errorMessage, code: errorCode)))
+                        }
+                    } catch {
+                        // 如果无法解析为APIResponse格式，尝试直接解析为T
+                        do {
+                            let value = try JSONDecoder().decode(T.self, from: data)
+                            completion(.success(value))
+                        } catch {
+                            completion(.failure(APIError.decodingError(error)))
+                        }
+                    }
+                    
                 case .failure(let error):
-                    completion(.failure(error))
+                    completion(.failure(APIError.networkError(error)))
                 }
             }
     }
@@ -339,5 +369,49 @@ class NetworkManager {
     // MARK: - 取消请求
     func cancelRequest(_ request: DataRequest) {
         request.cancel()
+    }
+}
+
+
+struct APIResponse<T: Decodable>: Decodable {
+    let success: Bool
+    let message: String?
+    let errorCode: Int?
+    let data: T?
+    
+    enum CodingKeys: String, CodingKey {
+        case success
+        case message
+        case errorCode = "error_code"
+        case data
+    }
+}
+
+// 自定义错误类型
+enum APIError: Error {
+    case serverError(message: String, code: Int)
+    case networkError(Error)
+    case decodingError(Error)
+    
+    var localizedDescription: String {
+        switch self {
+        case .serverError(let message, _):
+            return message
+        case .networkError(let error):
+            return "网络错误: \(error.localizedDescription)"
+        case .decodingError(let error):
+            return "数据解析错误: \(error.localizedDescription)"
+        }
+    }
+    
+    var errorCode: Int {
+        switch self {
+        case .serverError(_, let code):
+            return code
+        case .networkError(_):
+            return -1000
+        case .decodingError(_):
+            return -2000
+        }
     }
 }

@@ -96,3 +96,79 @@
 "input_error" = "Input Error";
 "please_enter_email_password" = "Please enter email and password";
 "login_failed" = "Login Failed";
+
+
+/* Profile tab title */
+"profile" = "Profile";
+
+/* Edit profile quick action */
+"edit_profile" = "Edit Profile";
+
+/* Security settings quick action */
+"security_settings" = "Security";
+
+/* Notifications quick action */
+"notifications" = "Notifications";
+
+/* Logout button */
+"logout" = "Log Out";
+
+/* Account settings section title */
+"account_settings" = "Account Settings";
+
+/* Personal info setting */
+"personal_info" = "Personal Information";
+
+/* Password and security setting */
+"password_security" = "Password & Security";
+
+/* Linked accounts setting */
+"linked_accounts" = "Linked Accounts";
+
+/* Subscription and payment section title */
+"subscription_payment" = "Subscription & Payment";
+
+/* Subscription plan setting */
+"subscription_plan" = "Subscription Plan";
+
+/* Premium subscription */
+"premium" = "Premium";
+
+/* Payment methods setting */
+"payment_methods" = "Payment Methods";
+
+/* Billing history setting */
+"billing_history" = "Billing History";
+
+/* Preferences section title */
+"preferences" = "Preferences";
+
+/* Language setting */
+"language" = "Language";
+
+/* Chinese Simplified language */
+"chinese_simplified" = "Chinese Simplified";
+
+/* Dark mode setting */
+"dark_mode" = "Dark Mode";
+
+/* Confirm logout title */
+"confirm_logout" = "Confirm Logout";
+
+/* Confirm logout message */
+"confirm_logout_message" = "Are you sure you want to log out?";
+
+/* Cancel button */
+"cancel" = "Cancel";
+
+/* Logout success message */
+"logout_success" = "Successfully logged out";
+
+/* Logout failed message */
+"logout_failed" = "Failed to log out, please try again later";
+
+/* Not logged in name */
+"not_logged_in" = "Not Logged In";
+
+/* Tap to login */
+"tap_to_login" = "Tap to Login";
