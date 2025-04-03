@@ -226,24 +226,44 @@ class ProfileViewController: UIViewController {
     }
     
     private func loadUserProfile() {
-        // 这里应该从API获取用户资料
-        // 临时使用假数据
-        let name = "Sarah Anderson"
-        let email = "sarah.anderson@gmail.com"
+        // 先尝试加载本地缓存的用户信息
+        if let cachedUser = DefaultsManager.shared.getUserInfo() {
+            // 使用缓存数据更新UI
+            profileHeaderView.updateProfile(name: cachedUser.username, email: cachedUser.email, image: nil)
+        }
         
-        // 更新头部视图
-        profileHeaderView.updateProfile(name: name, email: email, image: nil)
-        
-        // 加载头像（这里可以使用SDWebImage等库加载网络图片）
-        if let url = URL(string: "https://ai-public.mastergo.com/ai/img_res/60f7774f5fc2c83de43ec8c4fb745e48.jpg") {
-            // 使用URLSession加载图片（实际项目中建议使用图片加载库）
-            URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-                if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.profileHeaderView.profileImageView.image = image
+        // 然后从服务器获取最新的用户信息（不显示加载指示器）
+        UserService.shared.getCurrentUser { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let user):
+                    // 更新头部视图显示最新的用户信息
+                    self.profileHeaderView.updateProfile(name: user.username, email: user.email, image: nil)
+                    
+                    // 如果有头像URL，加载头像
+                    // 这里使用一个默认头像，实际项目中应该从用户数据中获取头像URL
+                    if let url = URL(string: "https://ai-public.mastergo.com/ai/img_res/60f7774f5fc2c83de43ec8c4fb745e48.jpg") {
+                        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+                            if let data = data, let image = UIImage(data: data) {
+                                DispatchQueue.main.async {
+                                    self?.profileHeaderView.profileImageView.image = image
+                                }
+                            }
+                        }.resume()
+                    }
+                    
+                case .failure(let error):
+                    // 静默处理错误，因为我们已经显示了缓存数据
+                    print("获取用户信息失败: \(error.localizedDescription)")
+                    
+                    // 如果没有缓存数据且获取失败，则显示默认状态
+                    if DefaultsManager.shared.getUserInfo() == nil {
+                        self.profileHeaderView.resetToDefault()
                     }
                 }
-            }.resume()
+            }
         }
     }
     
