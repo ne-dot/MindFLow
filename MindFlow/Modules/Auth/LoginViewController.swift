@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 
 class LoginViewController: UIViewController {
-    
     // MARK: - UI组件
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -47,105 +46,13 @@ class LoginViewController: UIViewController {
         return label
     }()
     
-    private lazy var googleButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.backgroundColor = theme.backgroundColor
-        button.layer.borderWidth = 1
-        button.layer.borderColor = theme.borderColor.cgColor
-        button.layer.cornerRadius = 4
-        
-        // 创建自定义内容视图
-        let contentView = UIStackView()
-        contentView.axis = .horizontal
-        contentView.alignment = .center
-        contentView.spacing = 8
-        button.addSubview(contentView)
-        
-        // 创建图标 - 使用纤细体配置
-        let symbolConfig = UIImage.SymbolConfiguration(weight: .regular)
-        let iconView = UIImageView(image: UIImage(systemName: "g.circle", withConfiguration: symbolConfig))
-        
-        // 创建文字标签
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("continue_with_google", comment: "Continue with Google button")
-        titleLabel.textColor = theme.textColor
-        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        
-        // 添加到内容视图
-        contentView.addArrangedSubview(iconView)
-        contentView.addArrangedSubview(titleLabel)
-        
-        // 设置约束
-        contentView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        
-        return button
-    }()
-    
-    private lazy var appleButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.backgroundColor = theme.backgroundColor
-        button.layer.borderWidth = 1
-        button.layer.borderColor = theme.borderColor.cgColor
-        button.layer.cornerRadius = 4
-        
-        // 创建自定义内容视图
-        let contentView = UIStackView()
-        contentView.axis = .horizontal
-        contentView.alignment = .center
-        contentView.spacing = 8
-        button.addSubview(contentView)
-        
-        // 创建图标 - 使用纤细体配置
-        let symbolConfig = UIImage.SymbolConfiguration(weight: .ultraLight)
-        let appleIcon = UIImageView(image: UIImage(systemName: "apple.logo", withConfiguration: symbolConfig))
-        
-        // 创建文字标签
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("continue_with_apple", comment: "Continue with Apple button")
-        titleLabel.textColor = theme.textColor
-        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        
-        // 添加到内容视图
-        contentView.addArrangedSubview(appleIcon)
-        contentView.addArrangedSubview(titleLabel)
-        
-        // 设置约束
-        contentView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        
-        return button
-    }()
-    
-    private lazy var dividerView: UIView = {
-        let view = UIView()
-        
-        let line = UIView()
-        line.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-        view.addSubview(line)
-        
-        let label = UILabel()
-        label.text = NSLocalizedString("or", comment: "Or divider")
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = UIColor.gray
-        label.backgroundColor = .white
-        label.textAlignment = .center
-        view.addSubview(label)
-        
-        line.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(view)
-            make.centerY.equalTo(view)
-            make.height.equalTo(1)
-        }
-        
-        label.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(view)
-            make.width.equalTo(40)
-        }
-        
-        return view
+    private lazy var googleButton = SocialLoginButton(icon: "g.circle", title: "continue_with_google")
+    private lazy var appleButton = SocialLoginButton(icon: "apple.logo", title: "continue_with_apple")
+    private lazy var dividerView = DividerView(text: NSLocalizedString("or", comment: "Or divider"))
+    private lazy var loginFormView: LoginFormView = {
+        let formView = LoginFormView()
+        formView.delegate = self
+        return formView
     }()
     
     private lazy var emailTextField: UITextField = {
@@ -227,7 +134,7 @@ class LoginViewController: UIViewController {
         scrollView.addSubview(contentView)
         
         [logoLabel, welcomeLabel, googleButton, appleButton, dividerView, 
-         emailTextField, passwordInputView, forgotPasswordButton, signInButton, signUpStackView].forEach {
+         loginFormView, signUpStackView].forEach {
             contentView.addSubview($0)
         }
         
@@ -235,6 +142,7 @@ class LoginViewController: UIViewController {
         setupConstraints()
     }
     
+    // 修改约束设置
     private func setupConstraints() {
         // 关闭按钮约束
         closeButton.snp.makeConstraints { make in
@@ -289,35 +197,14 @@ class LoginViewController: UIViewController {
         }
         
         // 表单约束
-        emailTextField.snp.makeConstraints { make in
+        loginFormView.snp.makeConstraints { make in
             make.top.equalTo(dividerView.snp.bottom).offset(32)
             make.leading.equalToSuperview().offset(24)
             make.trailing.equalToSuperview().offset(-24)
-            make.height.equalTo(48)
-        }
-        
-        passwordInputView.snp.makeConstraints { make in
-            make.top.equalTo(emailTextField.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
-            make.height.equalTo(48)
-        }
-        
-        // 修改 forgotPasswordButton 的约束，使其相对于 passwordInputView
-        forgotPasswordButton.snp.makeConstraints { make in
-            make.top.equalTo(passwordInputView.snp.bottom).offset(8)
-            make.trailing.equalToSuperview().offset(-24)
-        }
-        
-        signInButton.snp.makeConstraints { make in
-            make.top.equalTo(forgotPasswordButton.snp.bottom).offset(24)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
-            make.height.equalTo(48)
         }
         
         signUpStackView.snp.makeConstraints { make in
-            make.top.equalTo(signInButton.snp.bottom).offset(32)
+            make.top.equalTo(loginFormView.snp.bottom).offset(32)
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().offset(-32)
         }
@@ -328,18 +215,12 @@ class LoginViewController: UIViewController {
         closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         googleButton.addTarget(self, action: #selector(googleSignInTapped), for: .touchUpInside)
         appleButton.addTarget(self, action: #selector(appleSignInTapped), for: .touchUpInside)
-        forgotPasswordButton.addTarget(self, action: #selector(forgotPasswordTapped), for: .touchUpInside)
-        signInButton.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
     }
     
-    // 删除 togglePasswordVisibility 方法，因为这个功能已经在 PasswordInputView 中实现
-    
     @objc private func closeTapped() {
-        // 关闭当前页面
         dismiss(animated: true)
     }
-
     
     @objc private func googleSignInTapped() {
         // 实现Google登录
@@ -351,46 +232,6 @@ class LoginViewController: UIViewController {
         print("Apple登录被点击")
     }
     
-    @objc private func forgotPasswordTapped() {
-        // 实现忘记密码功能
-        print("忘记密码被点击")
-    }
-    
-    private lazy var passwordInputView: PasswordInputView = {
-        let inputView = PasswordInputView()
-        inputView.placeholder = NSLocalizedString("enter_password", comment: "Password placeholder")
-        return inputView
-    }()
-    
-    @objc private func signInTapped() {
-        guard let email = emailTextField.text, !email.isEmpty,
-              let password = passwordInputView.text, !password.isEmpty else {
-            // 显示错误提示
-            showAlert(title: NSLocalizedString("input_error", comment: "Input error title"), 
-                     message: NSLocalizedString("please_enter_email_password", comment: "Please enter email and password"))
-            return
-        }
-        
-        // 显示加载指示器
-        LoadingView.show(in: view, message: "正在登录...")
-        
-        // 调用登录接口
-        UserService.shared.login(usernameOrEmail: email, password: password) { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(_):
-                // 登录成功后获取用户信息
-                self.fetchUserInfo()
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    // 移除加载指示器
-                    LoadingView.hide()
-                    ErrorHandler.handleError(error)
-                }
-            }
-        }
-    }
     
     // 获取用户信息
     private func fetchUserInfo() {
@@ -428,5 +269,35 @@ class LoginViewController: UIViewController {
     private func navigateToMainScreen() {
         // 跳转到主界面
         dismiss(animated: true)
+    }
+}
+
+// 添加LoginFormViewDelegate扩展
+extension LoginViewController: LoginFormViewDelegate {
+    func loginFormView(_ formView: LoginFormView, didTapSignInWith email: String, password: String) {
+        // 显示加载指示器
+        LoadingView.show(in: view, message: "正在登录...")
+        
+        // 调用登录接口
+        UserService.shared.login(usernameOrEmail: email, password: password) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(_):
+                // 登录成功后获取用户信息
+                self.fetchUserInfo()
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    // 移除加载指示器
+                    LoadingView.hide()
+                    ErrorHandler.handleError(error)
+                }
+            }
+        }
+    }
+    
+    func loginFormViewDidTapForgotPassword(_ formView: LoginFormView) {
+        // 实现忘记密码功能
+        print("忘记密码被点击")
     }
 }
