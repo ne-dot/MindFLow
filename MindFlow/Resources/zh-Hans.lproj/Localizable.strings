@@ -123,7 +123,7 @@
 "password_security" = "密码与安全";
 
 /* Linked accounts setting */
-"linked_accounts" = "关联账户";
+"linked_accounts" = "账号绑定";
 
 /* Subscription and payment section title */
 "subscription_payment" = "订阅与支付";

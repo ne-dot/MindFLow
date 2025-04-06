@@ -50,7 +50,7 @@ class SearchViewController: UIViewController {
     }()
     
     // 将UITextView替换为PlaceholderTextView
-    private lazy var searchTextField: PlaceholderTextView = {
+    lazy var searchTextField: PlaceholderTextView = {
         let textView = PlaceholderTextView()
         textView.textColor = theme.textColor
         textView.font = UIFont.systemFont(ofSize: 16)
@@ -94,6 +94,7 @@ class SearchViewController: UIViewController {
     // 修改这里：将SearchResultView替换为SearchResultTableView
     private lazy var searchResultView: SearchResultTableView = {
         let tableView = SearchResultTableView()
+        tableView.delegate = self
         tableView.isHidden = true
         return tableView
     }()
@@ -437,6 +438,10 @@ class SearchViewController: UIViewController {
 
 // MARK: - SearchViewProtocol 实现
 extension SearchViewController: SearchViewProtocol {
+    func updateSearchSuggestions(_ suggestions: [String]) {
+          searchResultView.updateSuggestions(suggestions)
+      }
+    
     // 实现流式搜索相关方法
     func clearSearchContent() {
 //        searchResultView.clearContent()
@@ -532,5 +537,12 @@ extension SearchViewController: UITextViewDelegate {
             return false
         }
         return true
+    }
+}
+
+extension SearchViewController: SearchResultTableViewDelegate {
+    func searchResultView(_ view: SearchResultTableView, didSelectSuggestion suggestion: String) {
+        searchTextField.text = suggestion
+        presenter.performStreamSearch(query: suggestion)
     }
 }

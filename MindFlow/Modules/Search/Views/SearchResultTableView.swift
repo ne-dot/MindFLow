@@ -8,6 +8,11 @@
 import UIKit
 import SnapKit
 
+protocol SearchResultTableViewDelegate: AnyObject {
+    // ... 现有的代理方法 ...
+    func searchResultView(_ view: SearchResultTableView, didSelectSuggestion suggestion: String)
+}
+
 // 在SearchResultTableView类中添加对AI回复卡片的支持
 class SearchResultTableView: UIView {
     
@@ -30,12 +35,38 @@ class SearchResultTableView: UIView {
         return tableView
     }()
     
+    // 添加建议相关的视图组件
+    private lazy var suggestionsFooterView: UIView = {
+        let view = UIView()
+        view.backgroundColor = theme.backgroundColor
+        return view
+    }()
+    
+    private lazy var suggestionsTitle: UILabel = {
+        let label = UILabel()
+        label.text = "相关搜索"
+        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.textColor = theme.secondaryTextColor
+        return label
+    }()
+    
+    private lazy var suggestionsStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.distribution = .fillEqually
+        return stack
+    }()
+    
     // MARK: - Properties
     private var searchResults: [SearchResultItem] = []
     
     // 添加流式数据相关属性
     private var currentContent: String = ""
     private var aiResponseItem: SearchResultItem?
+    
+    // 添加代理属性
+    weak var delegate: SearchResultTableViewDelegate?
     
     // MARK: - Initialization
     override init(frame: CGRect) {
@@ -57,6 +88,27 @@ class SearchResultTableView: UIView {
         // 设置约束
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        // 设置建议 footer view
+        setupSuggestionsFooterView()
+    }
+    
+    private func setupSuggestionsFooterView() {
+        suggestionsFooterView.addSubview(suggestionsTitle)
+        suggestionsFooterView.addSubview(suggestionsStackView)
+        
+        suggestionsTitle.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16)
+            make.left.equalToSuperview().offset(16)
+            make.right.equalToSuperview().offset(-16)
+        }
+        
+        suggestionsStackView.snp.makeConstraints { make in
+            make.top.equalTo(suggestionsTitle.snp.bottom).offset(12)
+            make.left.equalToSuperview().offset(16)
+            make.right.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-16)
         }
     }
     
@@ -192,6 +244,78 @@ class SearchResultTableView: UIView {
             
             appendContent(sourcesText)
         }
+    }
+    
+    // 添加更新建议的方法
+    func updateSuggestions(_ suggestions: [String]) {
+        // 清除现有建议
+        suggestionsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        // 如果没有建议，移除 footer view
+        if suggestions.isEmpty {
+            tableView.tableFooterView = nil
+            return
+        }
+        
+        // 为每个建议创建按钮
+        for suggestion in suggestions {
+            let button = createSuggestionButton(with: suggestion)
+            suggestionsStackView.addArrangedSubview(button)
+        }
+        
+        // 设置并更新 footer view
+        tableView.tableFooterView = suggestionsFooterView
+        
+        // 重新计算 footer view 的高度
+        let width = tableView.bounds.width
+        let fittingSize = suggestionsFooterView.systemLayoutSizeFitting(
+            CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+        
+        suggestionsFooterView.frame = CGRect(
+            x: 0,
+            y: 0,
+            width: width,
+            height: fittingSize.height
+        )
+        
+        tableView.tableFooterView = suggestionsFooterView
+    }
+    
+    private func createSuggestionButton(with text: String) -> UIView {
+        let containerView = UIView()
+        containerView.backgroundColor = theme.secondaryBackgroundColor
+        containerView.layer.cornerRadius = 8
+        
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 14)
+        label.textColor = theme.textColor
+        label.numberOfLines = 0 // 支持多行
+        label.lineBreakMode = .byWordWrapping
+        
+        containerView.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12))
+        }
+        
+        // 添加点击手势
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped(_:)))
+        containerView.addGestureRecognizer(tapGesture)
+        containerView.isUserInteractionEnabled = true
+        
+        // 存储建议文本，用于点击时识别
+        containerView.accessibilityLabel = text
+        
+        return containerView
+    }
+    
+    @objc private func suggestionTapped(_ gesture: UITapGestureRecognizer) {
+        guard let containerView = gesture.view,
+              let suggestionText = containerView.accessibilityLabel else { return }
+        delegate?.searchResultView(self, didSelectSuggestion: suggestionText)
     }
 }
 

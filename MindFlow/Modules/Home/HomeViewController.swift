@@ -15,8 +15,12 @@ class HomeViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let welcomeView = WelcomeView()
-    private let suggestionsStackView = UIStackView()
     private let tipView = TipView(iconName: "lightbulb", text: "search_hint".localized)
+    private lazy var suggestionsStackView: SuggestionsStackView = {
+        let view = SuggestionsStackView()
+        view.delegate = self
+        return view
+    }()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -35,8 +39,6 @@ class HomeViewController: UIViewController {
         // 设置所有约束
         setupAllConstraints()
         
-        // 设置建议卡片
-        setupSuggestions()
     }
     
     private func addAllSubviews() {
@@ -79,14 +81,9 @@ class HomeViewController: UIViewController {
         }
         
         // 建议栏约束
-        suggestionsStackView.axis = .vertical
-        suggestionsStackView.spacing = 16
-        suggestionsStackView.distribution = .fillEqually
-        
         suggestionsStackView.snp.makeConstraints { make in
             make.top.equalTo(welcomeView.snp.bottom).offset(32)
-            make.left.equalToSuperview().offset(16)
-            make.right.equalToSuperview().offset(-16)
+            make.left.right.equalToSuperview().inset(16)
         }
         
         // 提示视图约束
@@ -96,22 +93,6 @@ class HomeViewController: UIViewController {
             make.right.equalToSuperview().offset(-16)
             make.bottom.equalToSuperview().offset(-80)
             make.height.equalTo(60)
-        }
-    }
-    
-    private func setupSuggestions() {
-        let suggestions = [
-            "suggestion_ai_search".localized,
-            "suggestion_productivity".localized,
-            "suggestion_remote_work".localized
-        ]
-        
-        for suggestion in suggestions {
-            let cardView = SuggestionCardView(text: suggestion)
-            cardView.onTap = { [weak self] in
-                self?.handleSuggestionTap(suggestion)
-            }
-            suggestionsStackView.addArrangedSubview(cardView)
         }
     }
     
@@ -133,9 +114,13 @@ class HomeViewController: UIViewController {
     
     // 添加显示搜索页面的方法
     // 修改显示搜索页面的方法，添加渐入渐出动画
-    private func showSearchScreen() {
+    private func showSearchScreen(query: String? = nil) {
         let searchVC = SearchViewController()
-       
+        if let q = query {
+            searchVC.searchTextField.text = q
+            searchVC.performSearch(query: q)
+        }
+        
         
         searchVC.configure(with: [
             "suggestion_ai_search".localized,
@@ -175,10 +160,11 @@ class HomeViewController: UIViewController {
         print("mic_button_tapped".localized)
         // 处理麦克风按钮点击
     }
-    
-    private func handleSuggestionTap(_ suggestion: String) {
-        print("\("suggestion_tapped".localized)\(suggestion)")
-        // 处理建议卡片点击
-        headerView.setSearchText(suggestion)
+}
+
+extension HomeViewController: SuggestionsStackViewDelegate {
+    func suggestionsStackView(_ stackView: SuggestionsStackView, didSelectSuggestion suggestion: String) {
+        // 处理建议选择，比如跳转到搜索页面
+        showSearchScreen(query: suggestion)
     }
 }

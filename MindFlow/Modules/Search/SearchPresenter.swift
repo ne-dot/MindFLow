@@ -22,6 +22,9 @@ protocol SearchViewProtocol: AnyObject {
     func setSearchQueryTitle(_ query: String)
     func appendSearchContent(_ content: String)
     func updateSearchSources(sources: [String])
+    
+    // 添加显示搜索建议的方法
+    func updateSearchSuggestions(_ suggestions: [String])
 }
 
 class SearchPresenter {
@@ -33,6 +36,9 @@ class SearchPresenter {
     
     // 数据模型
     private var suggestions: [String] = []
+    
+    // 添加建议服务
+    private let suggestionService = SuggestionService()
     
     init(searchService: SearchService = SearchService()) {
         self.searchService = searchService
@@ -76,23 +82,36 @@ class SearchPresenter {
             onError: { [weak self] error in
                 DispatchQueue.main.async {
                     self?.view?.showError(message: error.localizedDescription)
-                    self?.view?.showResultsView() // 即使出错也显示结果页面
+                    self?.view?.showResultsView()
                 }
             },
             onCompletion: { [weak self] in
                 DispatchQueue.main.async {
-                    // 流式请求完成后的处理
+                    
+                    self?.generateSuggestions(query: query)
                     self?.streamRequest = nil
-                    
-                    // 确保显示结果页面
                     self?.view?.showResultsView()
-                    
-                    // 更新来源
                     let sources = self?.extractSourcesFromContent() ?? []
                     self?.view?.updateSearchSources(sources: sources)
                 }
             }
         )
+    }
+    
+    func generateSuggestions(query: String) {
+        // 同时获取搜索建议
+        suggestionService.generateSuggestions(query: query) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let suggestions):
+                    self?.view?.showResultsView()
+                    self?.view?.updateSearchSuggestions(suggestions)
+                case .failure(let error):
+                    print("获取搜索建议失败: \(error.localizedDescription)")
+                    // 失败时可以选择不显示建议，所以这里不需要向用户显示错误
+                }
+            }
+        }
     }
     
     // 取消流式请求

@@ -50,7 +50,11 @@ struct AppConfig {
             static let favorite = "/api/contents/favorite"
         }
         
-        // 其他API路径可以在这里添加
+        // AI search
+        struct AISearch {
+            static let search = "/api/search"
+            static let suggest = "/api/suggestions/generate"
+        }
     }
     
     // 完整API URL
