@@ -54,6 +54,7 @@ struct AppConfig {
         struct AISearch {
             static let search = "/api/search"
             static let suggest = "/api/suggestions/generate"
+            static let suggestions = "/api/suggestions"
         }
     }
     

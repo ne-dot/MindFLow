@@ -40,6 +40,13 @@ struct SuggestionInfo: Codable {
     }
 }
 
+// 建议列表响应模型
+struct SuggestionListResponse: Codable {
+    let success: Bool
+    let message: String
+    let data: [String]
+}
+
 extension Defaults.Keys {
     // 匿名用户ID
     static let suggestions = Key<[String]?>("cached_suggestions_", default: nil)
@@ -109,4 +116,21 @@ class SuggestionService {
         let expirationDate = Date().addingTimeInterval(cacheValidDuration)
         DefaultsManager.shared.set(expirationDate, for: .cacheExpiration)
     }
+
+    // 获取建议列表
+    func fetchSuggestions(completion: @escaping (Result<[String], Error>) -> Void) {
+        let url = AppConfig.shared.apiURL(AppConfig.APIPath.AISearch.suggestions)
+        
+        NetworkManager.shared.get(url) {[weak self] (result: Result<SuggestionListResponse, Error>) in
+            switch result {
+            case .success(let response):
+                // 缓存建议数据
+                self?.cacheSuggestions(response.data)
+                completion(.success(response.data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
 } 

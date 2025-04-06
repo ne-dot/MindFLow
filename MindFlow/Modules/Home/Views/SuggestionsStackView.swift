@@ -59,8 +59,21 @@ class SuggestionsStackView: UIView {
     
     // 添加加载缓存建议的方法
     func loadCachedSuggestions() {
+        // 先尝试从缓存加载
         if let suggestions = suggestionService.getCachedSuggestions() {
             updateSuggestions(suggestions)
+        }
+        
+        // 同时请求新数据
+        suggestionService.fetchSuggestions { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let suggestions):
+                    self?.updateSuggestions(suggestions)
+                case .failure(let error):
+                    print("获取建议失败：\(error.localizedDescription)")
+                }
+            }
         }
     }
     
