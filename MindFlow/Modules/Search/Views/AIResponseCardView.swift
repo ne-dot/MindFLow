@@ -52,36 +52,27 @@ class AIResponseCardView: UITableViewCell {
     
     private lazy var actionButtonsView: UIView = {
         let view = UIView()
-        view.backgroundColor = theme.secondaryTextColor
-        view.layer.cornerRadius = 8
         return view
     }()
     
     private lazy var copyButton: UIButton = {
         let button = UIButton(type: .system)
-        setupActionButton(button, icon: "doc.on.doc", title: "复制")
+        button.setImage(UIImage(systemName: "doc.on.doc"), for: .normal)
         button.addTarget(self, action: #selector(copyButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var shareButton: UIButton = {
         let button = UIButton(type: .system)
-        setupActionButton(button, icon: "square.and.arrow.up", title: "分享")
+        button.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
         button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         return button
     }()
     
-    private lazy var likeButton: UIButton = {
+    private lazy var saveButton: UIButton = {
         let button = UIButton(type: .system)
-        setupActionButton(button, icon: "hand.thumbsup", title: "有用")
+        button.setImage(UIImage(systemName: "bookmark.fill"), for: .normal)
         button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var dislikeButton: UIButton = {
-        let button = UIButton(type: .system)
-        setupActionButton(button, icon: "hand.thumbsdown", title: "无用")
-        button.addTarget(self, action: #selector(dislikeButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -115,7 +106,6 @@ class AIResponseCardView: UITableViewCell {
         
         // 将Markdown转换为AttributedString
         renderMarkdown(response)
-        updateLikeDislikeButtons()
     }
     
     // 添加Markdown渲染方法
@@ -201,21 +191,6 @@ class AIResponseCardView: UITableViewCell {
         actionButtonsView.backgroundColor = theme.secondaryBackgroundColor
         actionButtonsView.layer.cornerRadius = 8
         
-        // 复制按钮
-        setupActionButton(copyButton, icon: "doc.on.doc", title: "复制")
-        copyButton.addTarget(self, action: #selector(copyButtonTapped), for: .touchUpInside)
-        
-        // 分享按钮
-        setupActionButton(shareButton, icon: "square.and.arrow.up", title: "分享")
-        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
-        
-        // 点赞按钮
-        setupActionButton(likeButton, icon: "hand.thumbsup", title: "有用")
-        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
-        
-        // 踩按钮
-        setupActionButton(dislikeButton, icon: "hand.thumbsdown", title: "无用")
-        dislikeButton.addTarget(self, action: #selector(dislikeButtonTapped), for: .touchUpInside)
         
         // 添加子视图
         contentView.addSubview(containerView)
@@ -226,24 +201,11 @@ class AIResponseCardView: UITableViewCell {
         
         actionButtonsView.addSubview(copyButton)
         actionButtonsView.addSubview(shareButton)
-        actionButtonsView.addSubview(likeButton)
-        actionButtonsView.addSubview(dislikeButton)
+        actionButtonsView.addSubview(saveButton)
         
         setupConstraints()
     }
-    
-    private func setupActionButton(_ button: UIButton, icon: String, title: String) {
-        let config = UIImage.SymbolConfiguration(pointSize: 14)
-        button.setImage(UIImage(systemName: icon, withConfiguration: config), for: .normal)
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        button.tintColor = .gray
-        button.setTitleColor(.gray, for: .normal)
-        
-        // 水平布局
-        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 4)
-        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 0)
-    }
+
     
     private func setupConstraints() {
         containerView.snp.makeConstraints { make in
@@ -273,66 +235,34 @@ class AIResponseCardView: UITableViewCell {
         
         actionButtonsView.snp.makeConstraints { make in
             make.top.equalTo(responseTextView.snp.bottom).offset(16)
-            make.left.equalToSuperview().offset(16)
             make.right.equalToSuperview().offset(-16)
             make.bottom.equalToSuperview().offset(-16)
             make.height.equalTo(44)
+            make.width.equalTo(36 * 3)
         }
-        
-        // 平均分配按钮宽度
-        let buttonWidth = (UIScreen.main.bounds.width - 32 - 32) / 4
         
         copyButton.snp.makeConstraints { make in
             make.left.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.width.equalTo(buttonWidth)
+            make.width.equalTo(36)
             make.height.equalTo(36)
         }
         
         shareButton.snp.makeConstraints { make in
             make.left.equalTo(copyButton.snp.right)
             make.centerY.equalToSuperview()
-            make.width.equalTo(buttonWidth)
+            make.width.equalTo(36)
             make.height.equalTo(36)
         }
         
-        likeButton.snp.makeConstraints { make in
+        saveButton.snp.makeConstraints { make in
             make.left.equalTo(shareButton.snp.right)
             make.centerY.equalToSuperview()
-            make.width.equalTo(buttonWidth)
+            make.width.equalTo(36)
             make.height.equalTo(36)
         }
         
-        dislikeButton.snp.makeConstraints { make in
-            make.left.equalTo(likeButton.snp.right)
-            make.centerY.equalToSuperview()
-            make.width.equalTo(buttonWidth)
-            make.height.equalTo(36)
-        }
-    }
-    
-    private func updateLikeDislikeButtons() {
-        // 更新点赞按钮状态
-        if isLiked {
-            likeButton.tintColor = UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0)
-            likeButton.setTitleColor(UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0), for: .normal)
-            likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
-        } else {
-            likeButton.tintColor = .gray
-            likeButton.setTitleColor(.gray, for: .normal)
-            likeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
-        }
-        
-        // 更新踩按钮状态
-        if isDisliked {
-            dislikeButton.tintColor = UIColor.orange
-            dislikeButton.setTitleColor(UIColor.orange, for: .normal)
-            dislikeButton.setImage(UIImage(systemName: "hand.thumbsdown.fill"), for: .normal)
-        } else {
-            dislikeButton.tintColor = .gray
-            dislikeButton.setTitleColor(.gray, for: .normal)
-            dislikeButton.setImage(UIImage(systemName: "hand.thumbsdown"), for: .normal)
-        }
+
     }
     
     // MARK: - Actions
@@ -370,8 +300,7 @@ class AIResponseCardView: UITableViewCell {
         } else {
             isLiked = false
         }
-        
-        updateLikeDislikeButtons()
+    
         
         // 添加触觉反馈
         let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -387,8 +316,6 @@ class AIResponseCardView: UITableViewCell {
         } else {
             isDisliked = false
         }
-        
-        updateLikeDislikeButtons()
         
         // 添加触觉反馈
         let generator = UIImpactFeedbackGenerator(style: .medium)
