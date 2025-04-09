@@ -115,13 +115,10 @@ class HomeViewController: UIViewController {
     // 添加显示搜索页面的方法
     // 修改显示搜索页面的方法，添加渐入渐出动画
     private func showSearchScreen(query: String? = nil) {
-        let searchVC = SearchViewController()
-        if let q = query {
-            searchVC.searchTextField.text = q
-            searchVC.performSearch(query: q)
+        guard let q = query  else {
+            return
         }
-        
-        
+        let searchVC = SearchViewController(searchText: q)
         searchVC.configure(with: [
             "suggestion_ai_search".localized,
             "suggestion_productivity".localized,
@@ -146,8 +143,13 @@ class HomeViewController: UIViewController {
             // 呈现后的渐入动画
             UIView.animate(withDuration: 0.3) {
                 searchNav.view.alpha = 1
+            } completion: { _ in
+                
             }
+
         }
+        
+   
     }
     
     // MARK: - Actions

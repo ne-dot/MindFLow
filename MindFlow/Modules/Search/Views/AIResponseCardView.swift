@@ -57,22 +57,28 @@ class AIResponseCardView: UITableViewCell {
     
     private lazy var copyButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "doc.on.doc"), for: .normal)
+        let image = UIImage(systemName: "doc.on.doc")
+        button.setImage(image, for: .normal)
+        button.tintColor = theme.secondaryTextColor
         button.addTarget(self, action: #selector(copyButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var shareButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
+        let image = UIImage(systemName: "square.and.arrow.up")
+        button.setImage(image, for: .normal)
+        button.tintColor = theme.secondaryTextColor
         button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         return button
     }()
     
-    private lazy var saveButton: UIButton = {
+    private lazy var favoriteButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "bookmark.fill"), for: .normal)
-        button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+        let image = UIImage(systemName: "heart")
+        button.setImage(image, for: .normal)
+        button.tintColor = theme.secondaryTextColor
+        button.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -80,12 +86,18 @@ class AIResponseCardView: UITableViewCell {
     private var isLiked: Bool = false
     private var isDisliked: Bool = false
     private var markdownText: String = "" // 存储原始Markdown文本
+    private var isFavorited: Bool = false {
+        didSet {
+            updateFavoriteButtonState()
+        }
+    }
     
     // 回调闭包
     var onCopy: (() -> Void)?
     var onShare: (() -> Void)?
     var onLike: ((Bool) -> Void)?
     var onDislike: ((Bool) -> Void)?
+    var onFavorite: ((Bool) -> Void)?
     
     // MARK: - Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -188,7 +200,7 @@ class AIResponseCardView: UITableViewCell {
         responseTextView.textContainer.lineFragmentPadding = 0
         
         // 操作按钮容器
-        actionButtonsView.backgroundColor = theme.secondaryBackgroundColor
+        actionButtonsView.backgroundColor = theme.backgroundColor
         actionButtonsView.layer.cornerRadius = 8
         
         
@@ -201,7 +213,7 @@ class AIResponseCardView: UITableViewCell {
         
         actionButtonsView.addSubview(copyButton)
         actionButtonsView.addSubview(shareButton)
-        actionButtonsView.addSubview(saveButton)
+        actionButtonsView.addSubview(favoriteButton)
         
         setupConstraints()
     }
@@ -236,92 +248,72 @@ class AIResponseCardView: UITableViewCell {
         actionButtonsView.snp.makeConstraints { make in
             make.top.equalTo(responseTextView.snp.bottom).offset(16)
             make.right.equalToSuperview().offset(-16)
-            make.bottom.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-12)
             make.height.equalTo(44)
-            make.width.equalTo(36 * 3)
+            make.width.equalTo(44 * 3)
         }
         
         copyButton.snp.makeConstraints { make in
-            make.left.equalToSuperview()
+            make.right.equalTo(shareButton.snp.left).offset(-12)
             make.centerY.equalToSuperview()
-            make.width.equalTo(36)
-            make.height.equalTo(36)
+            make.width.height.equalTo(32)
         }
         
         shareButton.snp.makeConstraints { make in
-            make.left.equalTo(copyButton.snp.right)
+            make.right.equalTo(favoriteButton.snp.left).offset(-12)
             make.centerY.equalToSuperview()
-            make.width.equalTo(36)
-            make.height.equalTo(36)
+            make.width.height.equalTo(32)
         }
         
-        saveButton.snp.makeConstraints { make in
-            make.left.equalTo(shareButton.snp.right)
+        favoriteButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().offset(0)
             make.centerY.equalToSuperview()
-            make.width.equalTo(36)
-            make.height.equalTo(36)
+            make.width.height.equalTo(32)
         }
-        
-
     }
     
     // MARK: - Actions
     @objc private func copyButtonTapped() {
-        // 复制原始Markdown文本而不是富文本
-        UIPasteboard.general.string = markdownText
-        
-        // 添加触觉反馈
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
-        
-        // 显示复制成功提示
-        let originalText = copyButton.title(for: .normal)
-        copyButton.setTitle("已复制", for: .normal)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-            self?.copyButton.setTitle(originalText, for: .normal)
-        }
-        
+        // 添加动画效果
+        animateButton(copyButton)
         onCopy?()
     }
     
     @objc private func shareButtonTapped() {
-        // 添加触觉反馈
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
-        
+        // 添加动画效果
+        animateButton(shareButton)
         onShare?()
     }
     
-    @objc private func likeButtonTapped() {
-        if !isLiked {
-            isLiked = true
-            isDisliked = false
-        } else {
-            isLiked = false
-        }
-    
-        
-        // 添加触觉反馈
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
-        
-        onLike?(isLiked)
+    @objc private func favoriteButtonTapped() {
+        isFavorited.toggle()
+        // 添加动画效果
+        animateButton(favoriteButton)
+        // 触发回调
+        onFavorite?(isFavorited)
     }
     
-    @objc private func dislikeButtonTapped() {
-        if !isDisliked {
-            isDisliked = true
-            isLiked = false
-        } else {
-            isDisliked = false
-        }
-        
-        // 添加触觉反馈
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
-        
-        onDislike?(isDisliked)
+    // 更新收藏按钮状态
+    private func updateFavoriteButtonState() {
+        let imageName = isFavorited ? "heart.fill" : "heart"
+        let image = UIImage(systemName: imageName)
+        favoriteButton.setImage(image, for: .normal)
+        favoriteButton.tintColor = isFavorited ? theme.primaryColor : theme.secondaryTextColor
     }
     
+    // 公开方法设置收藏状态
+    func setFavorited(_ favorited: Bool) {
+        isFavorited = favorited
+    }
+    
+    // MARK: - Private Methods
+    private func animateButton(_ button: UIButton) {
+        UIView.animate(withDuration: 0.1, animations: {
+            button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                button.transform = .identity
+            }
+        }
+    }
 }

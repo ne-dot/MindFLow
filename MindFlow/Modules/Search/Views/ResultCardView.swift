@@ -58,12 +58,6 @@ class ResultCardView: UITableViewCell {
         return button
     }()
     
-    private lazy var bookmarkButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
-        return button
-    }()
-    
     // MARK: - Properties
     private var isFavorited: Bool = false
     private var isBookmarked: Bool = false
@@ -104,7 +98,6 @@ class ResultCardView: UITableViewCell {
         }
         
         updateFavoriteButton()
-        updateBookmarkButton()
         updateConstraints(hasImage: self.hasImage)
     }
     
@@ -128,7 +121,6 @@ class ResultCardView: UITableViewCell {
         containerView.addSubview(descriptionLabel)
         containerView.addSubview(sourceLabel)
         containerView.addSubview(favoriteButton)
-        containerView.addSubview(bookmarkButton)
         
         // 设置基础约束
         setupBaseConstraints()
@@ -143,14 +135,10 @@ class ResultCardView: UITableViewCell {
         }
         
         favoriteButton.snp.makeConstraints { make in
-            make.right.equalTo(bookmarkButton.snp.left).offset(-16)
-            make.width.height.equalTo(32)
-        }
-        
-        bookmarkButton.snp.makeConstraints { make in
             make.right.equalToSuperview().offset(-16)
             make.width.height.equalTo(32)
         }
+        
     }
     
     private func updateConstraints(hasImage: Bool) {
@@ -159,7 +147,6 @@ class ResultCardView: UITableViewCell {
         descriptionLabel.snp.removeConstraints()
         sourceLabel.snp.removeConstraints()
         favoriteButton.snp.removeConstraints()
-        bookmarkButton.snp.removeConstraints()
         
         if hasImage {
             cardImageView.snp.makeConstraints { make in
@@ -189,54 +176,33 @@ class ResultCardView: UITableViewCell {
         sourceLabel.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(16)
             make.left.equalToSuperview().offset(16)
+            make.height.equalTo(32)
             make.bottom.equalToSuperview().offset(-16)
         }
         
         favoriteButton.snp.makeConstraints { make in
             make.centerY.equalTo(sourceLabel)
-            make.right.equalTo(bookmarkButton.snp.left).offset(-16)
-            make.width.height.equalTo(32)
-        }
-        
-        bookmarkButton.snp.makeConstraints { make in
-            make.centerY.equalTo(sourceLabel)
             make.right.equalToSuperview().offset(-16)
             make.width.height.equalTo(32)
         }
+        
     }
     
     private func updateFavoriteButton() {
         let imageName = isFavorited ? "heart.fill" : "heart"
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
-        favoriteButton.tintColor = isFavorited ? UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0) : .gray
+        favoriteButton.tintColor = isFavorited ? theme.primaryColor : theme.secondaryTextColor
     }
     
-    private func updateBookmarkButton() {
-        let imageName = isBookmarked ? "bookmark.fill" : "bookmark"
-        bookmarkButton.setImage(UIImage(systemName: imageName), for: .normal)
-        bookmarkButton.tintColor = isBookmarked ? UIColor(red: 0.31, green: 0.27, blue: 0.9, alpha: 1.0) : .gray
-    }
     
     // MARK: - Actions
     @objc private func favoriteButtonTapped() {
         isFavorited.toggle()
         updateFavoriteButton()
         onFavorite?(isFavorited)
-        
-        // 添加触觉反馈
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+        animateButton(favoriteButton)
     }
-    
-    @objc private func bookmarkButtonTapped() {
-        isBookmarked.toggle()
-        updateBookmarkButton()
-        onBookmark?(isBookmarked)
-        
-        // 添加触觉反馈
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
-    }
+
     
     // MARK: - Cell Highlight
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
@@ -248,6 +214,17 @@ class ResultCardView: UITableViewCell {
             }
         } else {
             containerView.transform = highlighted ? CGAffineTransform(scaleX: 0.98, y: 0.98) : .identity
+        }
+    }
+    
+    // MARK: - Private Methods
+    private func animateButton(_ button: UIButton) {
+        UIView.animate(withDuration: 0.1, animations: {
+            button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                button.transform = .identity
+            }
         }
     }
 }

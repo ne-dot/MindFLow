@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import Lottie
 
 class SearchViewController: UIViewController {
     
@@ -15,6 +14,7 @@ class SearchViewController: UIViewController {
     var onClose: (() -> Void)?
     private var isThinking = false
     private var showResults = false
+    private let initialSearchText: String?
     
     // 使用Presenter替代直接的Service调用
     private let presenter: SearchPresenter
@@ -106,13 +106,15 @@ class SearchViewController: UIViewController {
     }()
     
     // MARK: - Initialization
-    init(presenter: SearchPresenter = SearchPresenter()) {
-        self.presenter = presenter
+    init(searchText: String? = nil) {
+        self.initialSearchText = searchText
+        self.presenter = SearchPresenter()
         super.init(nibName: nil, bundle: nil)
         self.presenter.view = self
     }
     
     required init?(coder: NSCoder) {
+        self.initialSearchText = nil
         self.presenter = SearchPresenter()
         super.init(coder: coder)
         self.presenter.view = self
@@ -124,6 +126,13 @@ class SearchViewController: UIViewController {
         view.backgroundColor = theme.backgroundColor
         setupUI()
         setupActions()
+        
+        // 如果有初始搜索文本，设置并执行搜索
+        if let searchText = initialSearchText {
+            searchTextField.text = searchText
+            updateTextViewHeight(searchTextField, font: UIFont.systemFont(ofSize: 18, weight: .medium))
+            presenter.performStreamSearch(query: searchText)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -371,40 +380,15 @@ class SearchViewController: UIViewController {
                 searchTextField.placeholder = ""
             }
             
-            // 计算文本内容的实际高度
-            let size = CGSize(width: searchTextField.frame.width, height: .infinity)
-            let estimatedSize = searchTextField.sizeThatFits(size)
-            
-            // 设置最小高度，但允许根据内容增加高度
-            let minHeight: CGFloat = 44
-            let newHeight = max(estimatedSize.height, minHeight)
-            
-            // 更新高度约束
-            searchTextField.snp.updateConstraints { make in
-                make.height.equalTo(newHeight)
-            }
-            
+            updateTextViewHeight(searchTextField, font: UIFont.systemFont(ofSize: 18, weight: .medium))
+           
             // 更新底部边框线的可见性
             updateBorderLineVisibility(hidden: false)
         } else {
             // 恢复为可编辑状态
             searchTextField.isEditable = true
             searchTextField.isScrollEnabled = true
-            searchTextField.font = UIFont.systemFont(ofSize: 16)
-            
-            // 恢复占位符
-            if searchTextField.text.isEmpty {
-                searchTextField.placeholder = "Search anything..."
-            }
-            
-            // 恢复自适应高度
-            let size = CGSize(width: searchTextField.frame.width, height: .infinity)
-            let estimatedSize = searchTextField.sizeThatFits(size)
-            let newHeight = min(max(estimatedSize.height, initialTextViewHeight), 100)
-            
-            searchTextField.snp.updateConstraints { make in
-                make.height.equalTo(newHeight)
-            }
+            updateTextViewHeight(searchTextField, font: UIFont.systemFont(ofSize: 16))
             
             // 更新底部边框线的可见性
             updateBorderLineVisibility(hidden: true)
@@ -505,26 +489,7 @@ extension SearchViewController: SearchViewProtocol {
 // MARK: - UITextViewDelegate
 extension SearchViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
-        // Calculate text content height
-        let size = CGSize(width: textView.frame.width, height: .infinity)
-        let estimatedSize = textView.sizeThatFits(size)
-        
-        // Set minimum and maximum height
-        let minHeight: CGFloat = initialTextViewHeight
-        let maxHeight: CGFloat = 100
-        
-        // Calculate new height (between min and max)
-        let newHeight = min(max(estimatedSize.height, minHeight), maxHeight)
-        
-        // Update height constraint
-        textView.snp.updateConstraints { make in
-            make.height.equalTo(newHeight)
-        }
-        
-        // Smooth animation
-        UIView.animate(withDuration: 0.2) {
-            self.view.layoutIfNeeded()
-        }
+        updateTextViewHeight(searchTextField, font: UIFont.systemFont(ofSize:16))
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -538,7 +503,46 @@ extension SearchViewController: UITextViewDelegate {
         }
         return true
     }
+    
+    private func updateTextViewHeight(_ textView: UITextView, font: UIFont) {
+        let contentWidth = UIScreen.main.bounds.width - 32
+        
+        // 计算文本高度
+        let text = textView.text ?? ""
+        let textHeight = (text as NSString).boundingRect(
+            with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [
+                .font: font
+            ],
+            context: nil
+        ).height
+        
+        // 加上 textView 的上下内边距
+        let totalHeight = textHeight + textView.textContainerInset.top + textView.textContainerInset.bottom
+        
+        // 设置最小和最大高度限制
+        let minHeight: CGFloat = 36
+        let maxHeight: CGFloat = 100
+        let newHeight = min(max(totalHeight, minHeight), maxHeight)
+        
+        // 更新约束
+        searchTextField.snp.remakeConstraints { make in
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+            make.top.equalTo(12)
+            make.bottom.equalTo(-12)
+            // 设置初始高度
+            make.height.equalTo(newHeight)
+        }
+        
+        // 添加动画
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
 }
+
 
 extension SearchViewController: SearchResultTableViewDelegate {
     func searchResultView(_ view: SearchResultTableView, didSelectSuggestion suggestion: String) {

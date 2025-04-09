@@ -75,4 +75,19 @@ class PlaceholderTextView: UITextView {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    
+    override var text: String! {
+        didSet {
+            // 文本改变时更新占位符的显示状态
+            placeholderLabel.isHidden = !text.isEmpty
+        }
+    }
+    
+    // 重要：删除或修改任何可能阻止空格输入的代码
+    
+    // 如果有自定义的键盘处理方法，确保它允许空格
+    override func insertText(_ text: String) {
+        super.insertText(text)
+        placeholderLabel.isHidden = !self.text.isEmpty
+    }
 }
